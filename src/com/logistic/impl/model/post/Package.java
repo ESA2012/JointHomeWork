@@ -77,4 +77,7 @@ public class Package implements com.logistic.api.model.post.Package {
     public List<Stamp> getStamps() {
         return Stamps;
     }
+
+
+	
 }
