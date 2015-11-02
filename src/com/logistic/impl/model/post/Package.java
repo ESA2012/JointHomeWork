@@ -1,81 +1,79 @@
 package com.logistic.impl.model.post;
 
-import com.logistic.api.model.person.Address;
+import com.logistic.impl.model.person.Address;
 import com.logistic.api.model.person.FullName;
 import com.logistic.api.model.post.Stamp;
+import com.logistic.api.model.post.Package.Type;
+import com.logistic.impl.model.person.Person;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by SnakE on 02.11.2015.
+ * Created by Muny on 02.11.2015.
  */
 public class Package implements com.logistic.api.model.post.Package {
 	
-	private String PackageId;
-	private int Weight;
-	private Type Type;
-	private Address ReceiverAddress;
-	private Address SenderAddress;
-	private FullName SenderFullName;
-	private FullName ReceiverFullName;
-	private List<Stamp> Stamps;
-//______________________________________________________________________________________	
+	private String packageId;
+	private int weight;
+	private Type type;
+	private Person receiver;
+	private Person sender;
+	private ArrayList<Stamp> stamps;
+
+	public Package(Person sender, Person reciever, Package.Type type, int weight) {
+        this.sender = sender;
+        this.receiver = reciever;
+        this.type = type;
+        this.weight = weight;
+        this.packageId = generateID();
+        stamps = new ArrayList<Stamp>();
+   }
+
+    private String generateID() {
+        // TODO: package id generator
+        return null;
+    }
 	
-	public Package(String packageId, int weight,
-			com.logistic.api.model.post.Package.Type type,
-			Address receiverAddress, Address senderAddress,
-			FullName senderFullName, FullName receiverFullName,
-			List<Stamp> stamps) {
-		super();
-		PackageId = packageId;
-		Weight = weight;
-		Type = type;
-		ReceiverAddress = receiverAddress;
-		SenderAddress = senderAddress;
-		SenderFullName = senderFullName;
-		ReceiverFullName = receiverFullName;
-		Stamps = stamps;
-	}
-	
-//______________________________________________________________________________________	
     @Override
     public String getPackageId() {
-        return PackageId;
+        return packageId;
     }
     
 	@Override
     public int getWeight() {
-        return Weight;
+        return weight;
     }
 
     @Override
     public Type getType() {
-        return Type;
+        return type;
     }
 
     @Override
     public Address getReceiverAddress() {
-        return ReceiverAddress;
+        return receiver.getAddress();
     }
 
     @Override
     public Address getSenderAddress() {
-        return SenderAddress;
+        return sender.getAddress();
     }
 
     @Override
     public FullName getSenderFullName() {
-        return SenderFullName;
+        return sender.getFullName();
     }
 
     @Override
     public FullName getReceiverFullName() {
-        return ReceiverFullName;
+        return receiver.getFullName();
     }
 
     @Override
     public List<Stamp> getStamps() {
-        return Stamps;
+        return stamps;
     }
 
 
