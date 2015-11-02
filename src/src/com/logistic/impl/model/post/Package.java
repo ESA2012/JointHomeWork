@@ -21,15 +21,29 @@ public class Package implements com.logistic.api.model.post.Package {
 	private List<Stamp> Stamps;
 //______________________________________________________________________________________	
 	
-	
+	public Package(String packageId, int weight,
+			com.logistic.api.model.post.Package.Type type,
+			Address receiverAddress, Address senderAddress,
+			FullName senderFullName, FullName receiverFullName,
+			List<Stamp> stamps) {
+		super();
+		PackageId = packageId;
+		Weight = weight;
+		Type = type;
+		ReceiverAddress = receiverAddress;
+		SenderAddress = senderAddress;
+		SenderFullName = senderFullName;
+		ReceiverFullName = receiverFullName;
+		Stamps = stamps;
+	}
 	
 //______________________________________________________________________________________	
     @Override
     public String getPackageId() {
         return PackageId;
     }
-
-    @Override
+    
+	@Override
     public int getWeight() {
         return Weight;
     }
