@@ -10,43 +10,57 @@ import java.util.List;
  * Created by SnakE on 02.11.2015.
  */
 public class Package implements com.logistic.api.model.post.Package {
+	
+	private String PackageId;
+	private int Weight;
+	private Type Type;
+	private Address ReceiverAddress;
+	private Address SenderAddress;
+	private FullName SenderFullName;
+	private FullName ReceiverFullName;
+	private List<Stamp> Stamps;
+//______________________________________________________________________________________	
+	
+	
+	
+//______________________________________________________________________________________	
     @Override
     public String getPackageId() {
-        return null;
+        return PackageId;
     }
 
     @Override
     public int getWeight() {
-        return 0;
+        return Weight;
     }
 
     @Override
     public Type getType() {
-        return null;
+        return Type;
     }
 
     @Override
     public Address getReceiverAddress() {
-        return null;
+        return ReceiverAddress;
     }
 
     @Override
     public Address getSenderAddress() {
-        return null;
+        return SenderAddress;
     }
 
     @Override
     public FullName getSenderFullName() {
-        return null;
+        return SenderFullName;
     }
 
     @Override
     public FullName getReceiverFullName() {
-        return null;
+        return ReceiverFullName;
     }
 
     @Override
     public List<Stamp> getStamps() {
-        return null;
+        return Stamps;
     }
 }
