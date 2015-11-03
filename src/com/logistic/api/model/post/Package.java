@@ -24,9 +24,9 @@ public interface Package {
      * lp/WS15/RUS/AppHelp/Codes/Package_Type_Codes.htm
      */
     public static enum Type {
-        T_CP("РњРµСЃС‚Рѕ РіСЂСѓР·Р°"), T_30("РџР°Р»РµС‚Р°", 50), T_10("РљРѕСЂРѕР±РєР° UPS 10 РєРі", 10),
-        T_25("РљРѕСЂРѕР±РєР° UPS 25 РєРі", 25), T_27("РЎСЂРµРґРЅСЏСЏ РєРѕСЂРѕР±РєР° UPS Express");
-
+    	T_CP("Место груза"), T_30("Палета", 50), T_10("Коробка UPS 10 кг", 10),
+        T_25("Коробка UPS 25 кг", 25), T_27("Средняя коробка UPS Express");
+    	
         private final String description;
         private final int maxWeight;
 
