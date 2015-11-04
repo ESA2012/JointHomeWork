@@ -1,12 +1,10 @@
-package com.logistic.impl.model.post;
+package src.com.logistic.impl.model.post;
 
 import com.logistic.impl.model.person.Address;
 import com.logistic.api.model.person.FullName;
 import com.logistic.api.model.post.Stamp;
-import com.logistic.api.model.post.Package.Type;
 import com.logistic.impl.model.person.Person;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,12 +51,12 @@ public class Package implements com.logistic.api.model.post.Package {
 
     @Override
     public Address getReceiverAddress() {
-        return receiver.getAddress();
+        return (Address) receiver.getAddress();
     }
 
     @Override
     public Address getSenderAddress() {
-        return sender.getAddress();
+        return (Address) sender.getAddress();
     }
 
     @Override

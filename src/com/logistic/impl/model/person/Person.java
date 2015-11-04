@@ -1,4 +1,4 @@
-package com.logistic.impl.model.person;
+package src.com.logistic.impl.model.person;
 
 
 
@@ -10,8 +10,9 @@ public class Person implements com.logistic.api.model.person.Person {
     private Address address;
     private FullName fullName;
 
-    public Person(FullName fullName) {
+    public Person(FullName fullName, Address address) {
         this.fullName = fullName;
+        this.address  = address;
     }
 
     @Override

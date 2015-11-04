@@ -1,4 +1,4 @@
-package com.logistic.api.service;
+package src.com.logistic.api.service;
 
 import com.logistic.api.model.post.Package;
 import com.logistic.api.model.post.PostOffice;

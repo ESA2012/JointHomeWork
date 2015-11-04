@@ -1,4 +1,4 @@
-package com.logistic.impl.model.post;
+package src.com.logistic.impl.model.post;
 
 import com.logistic.api.model.person.Address;
 import com.logistic.api.model.post.Package;
@@ -9,43 +9,77 @@ import java.awt.*;
  * Created by SnakE on 02.11.2015.
  */
 public class PostOffice implements com.logistic.api.model.post.PostOffice {
-    @Override
+	
+	private int code;
+	private Point location;
+	private Address address;
+    private Stamp stamp;
+    private Package.Type type;
+    
+    
+    
+
+	public PostOffice(int code, Point location, Address address, Stamp stamp) {
+		
+		this.code = code;
+		this.location = location;
+		this.address = address;
+		this.stamp = stamp;
+		type = type.T_30;
+	}
+
+
+	public void setType(Package.Type type) {
+		type = type;
+	}
+
+	@Override
     public Stamp getStamp() {
-        return null;
+        return stamp;
     }
 
     @Override
     public Address getAddress() {
-        return null;
+        return address;
     }
 
     @Override
     public Package.Type getAcceptableTypes() {
-        return null;
+        return type;
     }
 
     @Override
     public int getMaxWeight() {
-        return 0;
+        return type.getMaxWeight();
     }
 
     @Override
     public boolean sendPackage(Package parcel) {
-        return false;
+    	if(parcel.getPackageId()!=null){
+    		//тут надо поставить штамп почтового отделения
+        return true;
+        }else{
+    	return false;}
     }
 
     @Override
     public boolean receivePackage(Package parcel) {
-        return false;
+    	if(parcel.getReceiverFullName()!=null&&parcel.getReceiverAddress()!=null
+    			&&parcel!=null){
+    		//тут надо поставить штамп почтового отделения
+        return true;
+        }else{
+        	return false;
+        }
     }
 
     @Override
     public int getCode() {
-        return 0;
+        return code;
     }
 
     @Override
     public Point getGeolocation() {
-        return null;
+        return location;
     }
 }

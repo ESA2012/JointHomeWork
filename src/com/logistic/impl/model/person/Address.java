@@ -1,4 +1,4 @@
-package com.logistic.impl.model.person;
+package src.com.logistic.impl.model.person;
 
 /**
  * Created by SnakE on 02.11.2015.
