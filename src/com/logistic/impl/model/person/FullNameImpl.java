@@ -1,14 +1,16 @@
 package com.logistic.impl.model.person;
 
+import com.logistic.api.model.person.FullName;
+
 /**
  * Created by SnakE on 02.11.2015.
  */
-public class FullName implements com.logistic.api.model.person.FullName {
+public class FullNameImpl implements FullName {
     private String firstName;
     private String middleName;
     private String lastName;
 
-    public FullName(String firstName, String middleName, String lastName) {
+    public FullNameImpl(String firstName, String middleName, String lastName) {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;

@@ -1,15 +1,17 @@
 package com.logistic.impl.model.person;
 
+import com.logistic.api.model.person.Address;
+
 /**
  * Created by SnakE on 02.11.2015.
  */
-public class Address implements com.logistic.api.model.person.Address {
+public class AddressImpl implements Address {
     private String street;
     private String city;
     private String country;
     private int code;
 
-    public Address(int code, String street, String city, String country) {
+    public AddressImpl(int code, String street, String city, String country) {
         this.code = code;
         this.street = street;
         this.city = city;
@@ -34,5 +36,10 @@ public class Address implements com.logistic.api.model.person.Address {
     @Override
     public int getCode() {
         return code;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%d, %s, %s, %s", code, street, city, country);
     }
 }

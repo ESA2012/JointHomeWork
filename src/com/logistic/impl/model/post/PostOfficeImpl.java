@@ -8,9 +8,9 @@ import java.awt.*;
 /**
  * Created by SnakE on 02.11.2015.
  */
-public class PostOffice implements com.logistic.api.model.post.PostOffice {
+public class PostOfficeImpl implements com.logistic.api.model.post.PostOffice {
     @Override
-    public Stamp getStamp() {
+    public StampImpl getStamp() {
         return null;
     }
 
