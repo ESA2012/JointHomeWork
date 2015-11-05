@@ -13,10 +13,9 @@ public class TransitImpl implements Transit {
     private List<PostOffice> route;
     private double price;
 
-    public TransitImpl(PostOffice start, PostOffice finish) {
+    public TransitImpl() {
         route = new ArrayList<PostOffice>();
-        price = 0;
-        // TODO: calculate route and fill route list
+        price = 0d;
     }
 
     @Override

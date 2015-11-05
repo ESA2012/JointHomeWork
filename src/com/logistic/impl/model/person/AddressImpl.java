@@ -1,6 +1,9 @@
 package com.logistic.impl.model.person;
 
 import com.logistic.api.model.person.Address;
+import org.omg.CORBA.*;
+
+import java.lang.Object;
 
 /**
  * Created by SnakE on 02.11.2015.
@@ -36,6 +39,16 @@ public class AddressImpl implements Address {
     @Override
     public int getCode() {
         return code;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o != null || o instanceof Address) {
+            Address address = (Address) o;
+            return address.toString().equals(this.toString());
+        } else {
+            return false;
+        }
     }
 
     @Override

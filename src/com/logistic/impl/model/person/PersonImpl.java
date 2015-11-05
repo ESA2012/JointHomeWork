@@ -1,6 +1,8 @@
 package com.logistic.impl.model.person;
 
 
+import com.logistic.api.model.person.Address;
+import com.logistic.api.model.person.FullName;
 import com.logistic.api.model.person.Person;
 
 /**
@@ -8,21 +10,21 @@ import com.logistic.api.model.person.Person;
  */
 public class PersonImpl implements Person {
 
-    private AddressImpl address;
-    private FullNameImpl fullName;
+    private Address address;
+    private FullName fullName;
 
-    public PersonImpl(FullNameImpl fullName, AddressImpl address) {
+    public PersonImpl(FullNameImpl fullName, Address address) {
         this.fullName = fullName;
         this.address = address;
     }
 
     @Override
-    public AddressImpl getAddress() {
+    public Address getAddress() {
         return address;
     }
 
     @Override
-    public FullNameImpl getFullName() {
+    public FullName getFullName() {
         return fullName;
     }
 }

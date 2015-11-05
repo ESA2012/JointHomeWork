@@ -39,28 +39,19 @@ public class PackageImpl implements Package {
         stamps = new ArrayList<Stamp>();
     }
 
-
     /**
      * Generate package ID
-     * @return
+     * @return package id
      */
     private String generateID() {
-        StringBuilder sbuild = new StringBuilder();
-        sbuild.append(sender.getFullName());
-        sbuild.append("\r\n");
-        sbuild.append(sender.getAddress());
-        sbuild.append("\r\n");
-        sbuild.append(receiver.getFullName());
-        sbuild.append("\r\n");
-        sbuild.append(receiver.getAddress());
-        sbuild.append("\r\n");
-        sbuild.append(type.getDescription());
-        sbuild.append("\r\n");
-        sbuild.append(weight);
-        sbuild.append("\r\n");
-        sbuild.append(new Date().toString());
         CRC32 crc32 = new CRC32();
-        crc32.update(sbuild.toString().getBytes());
+        crc32.update((String.valueOf(sender.getFullName())
+                + "\r\n" + sender.getAddress()
+                + "\r\n" + receiver.getFullName()
+                + "\r\n" + receiver.getAddress()
+                + "\r\n" + type.getDescription()
+                + "\r\n" + weight
+                + "\r\n" + new Date().toString()).getBytes());
 
         return Long.toString(crc32.getValue());
     }

@@ -2,50 +2,83 @@ package com.logistic.impl.model.post;
 
 import com.logistic.api.model.person.Address;
 import com.logistic.api.model.post.Package;
+import com.logistic.api.model.post.PostOffice;
+import com.logistic.api.model.post.Stamp;
 
 import java.awt.*;
 
-/**
- * Created by SnakE on 02.11.2015.
- */
-public class PostOfficeImpl implements com.logistic.api.model.post.PostOffice {
-    @Override
-    public StampImpl getStamp() {
-        return null;
+public class PostOfficeImpl implements PostOffice {
+	
+	private Point location;
+	private Address address;
+    private Package.Type type;
+    
+	public PostOfficeImpl(Address address, Point location, Package.Type type) {
+		this.location = location;
+		this.address = address;
+		this.type = type;
+	}
+
+
+	public void setType(Package.Type type) {
+		this.type = type;
+	}
+
+	@Override
+    public Stamp getStamp() {
+        return new StampImpl(this);
     }
 
     @Override
     public Address getAddress() {
-        return null;
+        return address;
     }
 
     @Override
     public Package.Type getAcceptableTypes() {
-        return null;
+        return type;
     }
 
     @Override
     public int getMaxWeight() {
-        return 0;
+        return type.getMaxWeight();
     }
 
     @Override
     public boolean sendPackage(Package parcel) {
-        return false;
+        // TODO реализовать метод
+    	if(parcel.getPackageId()!=null){
+        return true;
+        }else{
+    	return false;}
     }
 
     @Override
     public boolean receivePackage(Package parcel) {
-        return false;
+        // TODO реализовать метод
+        if (parcel.getReceiverFullName()!= null &&
+                parcel.getReceiverAddress()!= null &&
+                parcel != null) {
+            parcel.getStamps().add(new StampImpl(this));
+    		return true;
+        } else {
+        	return false;
+        }
     }
 
     @Override
     public int getCode() {
-        return 0;
+        return address.getCode();
     }
 
     @Override
     public Point getGeolocation() {
-        return null;
+        return location;
     }
+
+    @Override
+    public String toString() {
+        return address.toString() + " ("+location.getX()+", "+location.getY()+")";
+    }
+
 }

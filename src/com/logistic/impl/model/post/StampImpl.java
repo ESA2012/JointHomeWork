@@ -19,11 +19,11 @@ public class StampImpl implements Stamp {
 
     @Override
     public Address getPostOfficeAddress() {
-        return null;
+        return address;
     }
 
     @Override
     public Date getStampDate() {
-        return null;
+        return date;
     }
 }
