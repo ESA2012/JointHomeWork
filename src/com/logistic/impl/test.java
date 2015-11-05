@@ -24,8 +24,8 @@ public class test {
     public static void main(String[] args) throws IOException {
         DataStorage.readData();
 
-        PersonImpl sender = new PersonImpl(new FullNameImpl("Sergey", "Alex", "Eryomin"), new AddressImpl(1000, "Red street, 14", "Kharkov", "Novorossia"));
-        PersonImpl reciever = new PersonImpl(new FullNameImpl("Peter", "Alex", "Poroshenko"), new AddressImpl(9900, "Bank street, 14", "Kiev", "Bandershadt"));
+        PersonImpl sender = new PersonImpl(new FullNameImpl("Василий", "Петрович", "Орлов"), new AddressImpl(1000, "ул. Фёдора, 11", "г. Хариков", "Страна Х"));
+        PersonImpl reciever = new PersonImpl(new FullNameImpl("Петр", "Васильевич", "Решкин"), new AddressImpl(9900, "ул. Банкирофф, 12", "г. Крапница", "Страна Х"));
 
         PackageImpl p = new PackageImpl(sender, reciever, Package.Type.T_25, 10);
         SenderServiceImpl s = new SenderServiceImpl();
