@@ -3,6 +3,7 @@ package com.logistic.impl.model.person;
 import com.logistic.api.model.person.FullName;
 
 
+
 public class FullNameImpl implements FullName {
     private String firstName;
     private String middleName;

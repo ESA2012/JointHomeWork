@@ -8,6 +8,7 @@ import com.logistic.api.model.post.Stamp;
 import java.awt.*;
 
 
+
 public class PostOfficeImpl implements PostOffice {
 	
 	private Point location;

@@ -4,6 +4,7 @@ import com.logistic.api.model.post.PostOffice;
 import com.logistic.api.model.transport.DeliveryTransport;
 
 
+
 public class DeliveryTransportImpl implements DeliveryTransport {
 
     private PostOffice startPostOffice;

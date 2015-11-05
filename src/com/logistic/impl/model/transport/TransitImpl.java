@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 public class TransitImpl implements Transit {
     private List<PostOffice> route;
     private double price;

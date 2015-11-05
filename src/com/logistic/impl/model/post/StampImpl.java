@@ -5,6 +5,7 @@ import com.logistic.api.model.post.Stamp;
 
 import java.util.Date;
 
+
 public class StampImpl implements Stamp {
     private Date date;
     private Address address;

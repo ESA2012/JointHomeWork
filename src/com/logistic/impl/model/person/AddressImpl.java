@@ -2,6 +2,7 @@ package com.logistic.impl.model.person;
 
 import com.logistic.api.model.person.Address;
 
+
 /**
  * Created by SnakE on 02.11.2015.
  */

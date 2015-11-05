@@ -4,6 +4,7 @@ import com.logistic.api.model.person.Address;
 import com.logistic.api.model.person.FullName;
 import com.logistic.api.model.person.Person;
 
+
 /**
  * Created by SnakE on 02.11.2015.
  */

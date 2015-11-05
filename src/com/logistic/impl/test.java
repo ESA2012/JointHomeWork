@@ -10,11 +10,9 @@ import com.logistic.impl.service.SenderServiceImpl;
 
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-/**
- * Created by SnakE on 04.11.2015.
- */
+
+
 public class test {
     public static void main(String[] args) throws IOException {
         DataStorage.readData();
