@@ -1,4 +1,4 @@
-package com.logistic.api.service;
+package src.com.logistic.api.service;
 
 import java.util.HashMap;
 import java.util.Map;

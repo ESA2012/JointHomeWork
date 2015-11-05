@@ -13,7 +13,7 @@ public class PersonImpl implements Person {
     private Address address;
     private FullName fullName;
 
-    public PersonImpl(FullNameImpl fullName, Address address) {
+    public PersonImpl(FullName fullName, Address address) {
         this.fullName = fullName;
         this.address = address;
     }

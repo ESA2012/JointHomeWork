@@ -1,4 +1,4 @@
-package com.logistic.impl.model.person;
+package src.com.logistic.impl.model.person;
 
 import com.logistic.api.model.person.FullName;
 

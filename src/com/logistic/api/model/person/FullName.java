@@ -1,4 +1,4 @@
-package com.logistic.api.model.person;
+package src.com.logistic.api.model.person;
 
 /**
  * Created by Denis on 5/25/2015.
