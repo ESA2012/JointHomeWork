@@ -18,11 +18,11 @@ public class Stamp implements com.logistic.api.model.post.Stamp {
 
     @Override
     public Address getPostOfficeAddress() {
-        return null;
+        return address;
     }
 
     @Override
     public Date getStampDate() {
-        return null;
+        return date;
     }
 }
