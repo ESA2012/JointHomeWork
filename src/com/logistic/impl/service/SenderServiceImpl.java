@@ -72,7 +72,7 @@ public class SenderServiceImpl implements SenderService {
 
         for (PostOffice p: allowableOffices) {
             if (!transit.getTransitOffices().contains(p)) {
-                //TODO поиск пути
+                //TODO поиск путей
             }
         }
 
