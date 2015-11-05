@@ -6,7 +6,6 @@ import com.logistic.api.model.post.Package;
 import com.logistic.api.model.transport.Transit;
 import com.logistic.api.service.SenderService;
 import com.logistic.impl.model.transport.TransitImpl;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +60,6 @@ public class SenderServiceImpl implements SenderService {
         for (PostOffice p : DataStorage.getPostOffices()) {
             if (packType == p.getAcceptableTypes()) {
                 allowableOffices.add(p);
-                System.out.println(p.getCode());
             }
         }
 

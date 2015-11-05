@@ -1,6 +1,5 @@
 package com.logistic.impl.model.person;
 
-
 import com.logistic.api.model.person.Address;
 import com.logistic.api.model.person.FullName;
 import com.logistic.api.model.person.Person;

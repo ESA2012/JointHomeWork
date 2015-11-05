@@ -2,9 +2,7 @@ package com.logistic.impl.model.person;
 
 import com.logistic.api.model.person.FullName;
 
-/**
- * Created by SnakE on 02.11.2015.
- */
+
 public class FullNameImpl implements FullName {
     private String firstName;
     private String middleName;

@@ -11,9 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.zip.CRC32;
 
-/**
- * Created by SnakE on 02.11.2015.
- */
+
 public class PackageImpl implements Package {
 	
 	private String packageId;

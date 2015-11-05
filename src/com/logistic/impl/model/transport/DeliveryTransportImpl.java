@@ -3,9 +3,7 @@ package com.logistic.impl.model.transport;
 import com.logistic.api.model.post.PostOffice;
 import com.logistic.api.model.transport.DeliveryTransport;
 
-/**
- * Created by SnakE on 04.11.2015.
- */
+
 public class DeliveryTransportImpl implements DeliveryTransport {
 
     private PostOffice startPostOffice;

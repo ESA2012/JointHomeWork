@@ -6,9 +6,7 @@ import com.logistic.api.model.transport.Transit;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by SnakE on 04.11.2015.
- */
+
 public class TransitImpl implements Transit {
     private List<PostOffice> route;
     private double price;

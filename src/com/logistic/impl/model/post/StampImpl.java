@@ -5,9 +5,6 @@ import com.logistic.api.model.post.Stamp;
 
 import java.util.Date;
 
-/**
- * Created by SnakE on 02.11.2015.
- */
 public class StampImpl implements Stamp {
     private Date date;
     private Address address;

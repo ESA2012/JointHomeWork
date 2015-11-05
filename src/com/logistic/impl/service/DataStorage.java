@@ -11,10 +11,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.MatchResult;
-import java.util.regex.Pattern;
-
-import static java.lang.Double.*;
 
 /**
  * Created by SnakE on 04.11.2015.
