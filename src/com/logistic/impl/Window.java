@@ -18,7 +18,7 @@ public class Window {
         this.img = img;
     }
 
-    Canvas canvas;
+    private Canvas canvas;
 
     public void show() {
         JFrame window = new JFrame("Граф");
