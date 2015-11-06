@@ -51,7 +51,7 @@ public class PostOfficeImpl implements PostOffice {
         // TODO реализовать метод
     	if(parcel.getPackageId()!=null){
         return true;
-        }else{
+        } else {
     	return false;}
     }
 

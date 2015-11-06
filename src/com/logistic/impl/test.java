@@ -21,20 +21,23 @@ public class test {
         //-----------------------------------------------------
         Graph g = new Graph(640, 480);
 
-        g.drawNodes();
+
+
+        g.drawNodes(DataStorage.getPostOffices());
 
         Window window = new Window();
         window.setImg(g.getImage());
         window.show();
 
-        sleep(2000);
-        g.drawRoutes();
-        g.drawNodes();
+        //sleep(2000);
+        g.drawRoutes(DataStorage.getRouteMatrix(), DataStorage.getPostOffices());
+        g.drawNodes(DataStorage.getPostOffices());
         window.update();
+
         //-------------------------------------------------------
 
-        PersonImpl sender = new PersonImpl(new FullNameImpl("Василий", "Петрович", "Орлов"), new AddressImpl(1000, "ул. Фёдора, 11", "г. Хариков", "Страна Х"));
-        PersonImpl reciever = new PersonImpl(new FullNameImpl("Петр", "Васильевич", "Решкин"), new AddressImpl(9900, "ул. Банкирофф, 12", "г. Крапница", "Страна Х"));
+        PersonImpl sender = new PersonImpl(new FullNameImpl("Василий", "Петрович", "Орлов"), new AddressImpl(10000, "ул. Фёдора, 11", "г. Хариков", "Страна Х"));
+        PersonImpl reciever = new PersonImpl(new FullNameImpl("Петр", "Васильевич", "Решкин"), new AddressImpl(99000, "ул. Банкирофф, 12", "г. Крапница", "Страна Х"));
 
         PackageImpl p = new PackageImpl(sender, reciever, Package.Type.T_25, 10);
 

@@ -85,7 +85,6 @@ public class SenderServiceImpl implements SenderService {
     @Override
     public boolean sendPackage(Package parcel, Transit transit) {
         if (parcel == null || transit == null) return false;
-
         return false;
     }
 
@@ -111,6 +110,7 @@ public class SenderServiceImpl implements SenderService {
 
     @Override
     public double getMilesToDestination(String id) {
+        //TODO : realise method
         return 0;
     }
 

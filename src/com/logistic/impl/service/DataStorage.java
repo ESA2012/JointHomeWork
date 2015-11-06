@@ -40,7 +40,7 @@ public class DataStorage {
 
         matrix = new RouteMatrix(getPostOffices().size());
 
-        fillRandomMatrix(matrix);
+        fillRandomMatrix(matrix, DataStorage.getPostOffices());
 
         System.out.println(matrix);
     }
@@ -50,13 +50,19 @@ public class DataStorage {
         return matrix;
     }
 
-    private static void fillRandomMatrix(RouteMatrix routeMatrix) {
+    private static void fillRandomMatrix(RouteMatrix routeMatrix, List<PostOffice> postOffices) {
         Random rnd = new Random();
         for (int i = 0; i < routeMatrix.getSize(); i++) {
             for (int j = 0; j < i + 1; j++) {
                 int n = rnd.nextInt(11);
-                boolean b = n > 8? true : false;
+                boolean b = n > 3? true : false;
+
+                Point p1 = postOffices.get(i).getGeolocation();
+                Point p2 = postOffices.get(j).getGeolocation();
+
+                b = (p1.distance(p2) > 250d)? false:b;
                 b = (i == j)? false : b;
+
                 routeMatrix.getMatrix()[i][j] = b;
                 routeMatrix.getMatrix()[j][i] = b;
             }
