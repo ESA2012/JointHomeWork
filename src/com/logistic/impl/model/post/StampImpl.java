@@ -1,4 +1,4 @@
-package src.com.logistic.impl.model.post;
+package com.logistic.impl.model.post;
 
 import com.logistic.api.model.person.*;
 import com.logistic.api.model.post.Stamp;

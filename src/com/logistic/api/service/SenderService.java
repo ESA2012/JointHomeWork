@@ -1,4 +1,4 @@
-package src.com.logistic.api.service;
+package com.logistic.api.service;
 
 import com.logistic.api.model.post.Package;
 import com.logistic.api.model.post.PostOffice;
@@ -10,10 +10,10 @@ import java.util.List;
  * Created by Denis on 5/25/2015.
  */
 public interface SenderService {
-    public List<PostOffice> getAllOffices();
-    public List<Transit> calculatePossibleTransits(Package parcel);
-    public boolean sendPackage(Package parcel, Transit transit);
-    public PostOffice getPackageCurrentPosition(String id);
-    public double getMilesToDestination(String id);
+    List<PostOffice> getAllOffices();
+    List<Transit> calculatePossibleTransits(Package parcel);
+    boolean sendPackage(Package parcel, Transit transit);
+    PostOffice getPackageCurrentPosition(String id);
+    double getMilesToDestination(String id);
 
 }

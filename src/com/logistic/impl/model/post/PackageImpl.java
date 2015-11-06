@@ -1,4 +1,4 @@
-package src.com.logistic.impl.model.post;
+package com.logistic.impl.model.post;
 
 import com.logistic.api.model.person.Address;
 import com.logistic.api.model.person.FullName;
@@ -73,12 +73,12 @@ public class PackageImpl implements Package {
 
     @Override
     public Address getReceiverAddress() {
-        return (Address) receiver.getAddress();
+        return receiver.getAddress();
     }
 
     @Override
     public Address getSenderAddress() {
-        return (Address) sender.getAddress();
+        return sender.getAddress();
     }
 
     @Override
