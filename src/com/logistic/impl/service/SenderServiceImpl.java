@@ -32,7 +32,7 @@ public class SenderServiceImpl implements SenderService {
      * @param address    address to search closest post office
      * @return  closest post office
      */
-    private static PostOffice findClosestPostOffice(Address address) {
+    public static PostOffice findClosestPostOffice(Address address) {
         int personIndx = address.getCode();
         int min = Integer.MAX_VALUE;
         PostOffice post = null;

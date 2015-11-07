@@ -8,7 +8,7 @@ public class RouteMatrix {
     private boolean[][] matrix;
     private int size;
 
-    RouteMatrix (int nodes) {
+    public RouteMatrix (int nodes) {
         size = nodes;
         matrix = new boolean[size][size];
     }

@@ -19,23 +19,33 @@ public class Graph {
     private BufferedImage img;
     private Graphics2D g2d;
 
-    public Graph(int width, int height) {
+    public Graph(Rectangle rect) {
+        int width = rect.width;
+        int height = rect.height;
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         g2d = img.createGraphics();
         g2d.setColor(Color.white);
         g2d.fillRect(0, 0, width, height);
     }
 
+    public void selectNode(PostOffice postOffice) {
+        drawNode(postOffice, Color.RED, Color.WHITE);
+    }
+
     public void drawNodes(final List<PostOffice> postOfficeList) {
         for(PostOffice p: postOfficeList) {
-            Point point = p.getGeolocation();
-            g2d.setColor(Color.DARK_GRAY);
-            g2d.fillOval(point.x - 15, point.y - 15, 30, 30);
-
-            g2d.setFont(new Font("Liberation Sans", 0, 9));
-            g2d.setColor(Color.CYAN);
-            g2d.drawString(String.valueOf(p.getAddress().getCode()), point.x - 12, point.y + 4);
+            drawNode(p, Color.DARK_GRAY, Color.CYAN);
         }
+    }
+
+    private void drawNode(PostOffice postOffice, Color nodeColor, Color textColor) {
+        Point point = postOffice.getGeolocation();
+        g2d.setColor(nodeColor);
+        g2d.fillOval(point.x - 15, point.y - 15, 30, 30);
+        g2d.setFont(new Font("Liberation Sans", 0, 9));
+        g2d.setColor(textColor);
+        String index = String.valueOf(postOffice.getAddress().getCode());
+        g2d.drawString(index, point.x - 12, point.y + 4);
     }
 
 
