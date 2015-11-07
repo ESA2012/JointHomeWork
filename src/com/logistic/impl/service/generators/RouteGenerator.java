@@ -15,14 +15,15 @@ public class RouteGenerator {
 
     /**
      * Build random adjacency matrix for post offices
-     * @param postOffices    post offices list
-     * @param distanceMin    minimum allowed distance between post offices to connect
-     *                       (smaller value = graph less saturated)
-     * @param distanceMax     maximum allowed distance between post offices to connect
-     *                       (bigger value = graph more saturated)
-     * @return  builded matrix
+     * @param postOffices   post offices list
+     * @param density       destyny of routes (bigger value = less destiny)
+     * @param distanceMin   minimum allowed distance between post offices to connect
+     *                      (smaller value = graph less saturated)
+     * @param distanceMax   maximum allowed distance between post offices to connect
+     *                      (bigger value = graph more saturated)
+     * @return              builded matrix
      */
-    public static RouteMatrix buildRandomMatrix(List<PostOffice> postOffices, double distanceMin, double distanceMax) {
+    public static RouteMatrix buildRandomMatrix(List<PostOffice> postOffices, int density, double distanceMin, double distanceMax) {
 
         int nodes = postOffices.size();
 
@@ -33,7 +34,7 @@ public class RouteGenerator {
         for (int i = 0; i < nodes; i++) {
             for (int j = 0; j < i + 1; j++) {
                 int n = rnd.nextInt(11);
-                boolean b = n > 3? true : false;
+                boolean b = n > density? true : false;
 
                 Point p1 = postOffices.get(i).getGeolocation();
                 Point p2 = postOffices.get(j).getGeolocation();

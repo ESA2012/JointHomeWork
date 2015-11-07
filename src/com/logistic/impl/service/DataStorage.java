@@ -19,22 +19,25 @@ public class DataStorage {
 
     private static RouteMatrix matrix;
 
+    // ---------- Initialise Generators constants ----------
     public static final Rectangle AREA              = new Rectangle(800, 600);
-    public static final String COUNTRY_NAME         = "Старорумбия";
+    public static final String COUNTRY_NAME         = "Утопия";
     public static final int POST_OFFICES_COUNT      = 30;
     public static final int DISTANCE_BTWN_OFFICES   = 80;
 
+    public static final int ROUTES_DESTINY          = 3;
     public static final int MIN_ROUTE_LENGTH        = 0;
     public static final int MAX_ROUTE_LENGTH        = 180;
-
+    // ------------------------------------------------------
 
 
     static {
         Storage.getInstance().putToStorage(POST_OFFICES, BigGenerator.generatePostOffices(
                 COUNTRY_NAME, POST_OFFICES_COUNT, AREA, DISTANCE_BTWN_OFFICES));
-        matrix = RouteGenerator.buildRandomMatrix(DataStorage.getPostOffices(), MIN_ROUTE_LENGTH, MAX_ROUTE_LENGTH);
-    }
 
+        matrix = RouteGenerator.buildRandomMatrix(DataStorage.getPostOffices(),
+                ROUTES_DESTINY, MIN_ROUTE_LENGTH, MAX_ROUTE_LENGTH);
+    }
 
 
 //    public static void readPostOfficesData() throws IOException {
