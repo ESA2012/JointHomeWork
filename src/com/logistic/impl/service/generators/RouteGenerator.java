@@ -1,6 +1,7 @@
 package com.logistic.impl.service.generators;
 
 import com.logistic.api.model.post.PostOffice;
+import com.logistic.impl.service.DataStorage;
 import com.logistic.impl.service.RouteMatrix;
 
 import java.awt.*;
@@ -16,15 +17,14 @@ public class RouteGenerator {
     /**
      * Build random adjacency matrix for post offices
      * @param postOffices   post offices list
-     * @param density       destyny of routes (bigger value = less destiny)
-     * @param distanceMin   minimum allowed distance between post offices to connect
-     *                      (smaller value = graph less saturated)
-     * @param distanceMax   maximum allowed distance between post offices to connect
-     *                      (bigger value = graph more saturated)
+     * @param rt            route type
      * @return              builded matrix
      */
-    public static RouteMatrix buildRandomMatrix(List<PostOffice> postOffices, int density, double distanceMin, double distanceMax) {
+    public static RouteMatrix buildRandomMatrix(List<PostOffice> postOffices, RouteType rt) {
 
+        int density = rt.getRoutesDestiny();
+        double distanceMin = rt.getMinRouteLength();
+        double distanceMax = rt.getMaxRouteLength();
         int nodes = postOffices.size();
 
         RouteMatrix matrix = new RouteMatrix(nodes);
@@ -33,7 +33,7 @@ public class RouteGenerator {
 
         for (int i = 0; i < nodes; i++) {
             for (int j = 0; j < i + 1; j++) {
-                int n = rnd.nextInt(11);
+                int n = rnd.nextInt(rt.getRandomValue());
                 boolean b = n > density? true : false;
 
                 Point p1 = postOffices.get(i).getGeolocation();

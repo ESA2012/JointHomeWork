@@ -1,7 +1,6 @@
 package com.logistic.impl.visual;
 
 import com.logistic.api.model.post.PostOffice;
-import com.logistic.impl.service.DataStorage;
 import com.logistic.impl.service.RouteMatrix;
 
 import javax.imageio.ImageIO;
@@ -28,13 +27,13 @@ public class Graph {
         g2d.fillRect(0, 0, width, height);
     }
 
-    public void selectNode(PostOffice postOffice) {
-        drawNode(postOffice, Color.RED, Color.WHITE);
+    public void drawNode(PostOffice postOffice, Color color) {
+        drawNode(postOffice, color, Color.WHITE);
     }
 
     public void drawNodes(final List<PostOffice> postOfficeList) {
         for(PostOffice p: postOfficeList) {
-            drawNode(p, Color.DARK_GRAY, Color.CYAN);
+            drawNode(p, Color.DARK_GRAY, Color.YELLOW);
         }
     }
 
@@ -49,8 +48,8 @@ public class Graph {
     }
 
 
-    public void drawRoutes(final RouteMatrix matrix, final List<PostOffice> postOfficeList) {
-        g2d.setColor(Color.GRAY);
+    public void drawRoutes(final RouteMatrix matrix, final List<PostOffice> postOfficeList, Color color) {
+        g2d.setColor(color);
         boolean[][] m = matrix.getMatrix();
         int size = m.length;
         for (int i = 0; i < size; i++) {
@@ -64,6 +63,7 @@ public class Graph {
         }
 
     }
+
 
     public BufferedImage getImage() {
         return img;

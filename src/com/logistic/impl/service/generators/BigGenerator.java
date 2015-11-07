@@ -1,5 +1,6 @@
 package com.logistic.impl.service.generators;
 
+import com.logistic.api.model.person.Address;
 import com.logistic.api.model.post.*;
 import com.logistic.api.model.post.Package;
 import com.logistic.impl.model.person.AddressImpl;
@@ -14,7 +15,8 @@ import java.util.Random;
  * Created by SnakE on 07.11.2015.
  */
 public class BigGenerator {
-    public static String FILE_OFFICES = "postoffices.txt";
+
+    public static String countryName = "Утопия";
 
     private static String[] cities = { "Ангбанд", "Куёфф", "Линстаград", "Мегасити", "Сноубург", "Бронивики",
                                 "Богомолы", "Култаун", "Малиновка", "Султаново", "Тыковка", "Киберсити",
@@ -23,7 +25,7 @@ public class BigGenerator {
                                 "Калэмбель", "Дол Амрот", "Мория", "Форлонд", "Дуртанг", "Нью-Васюки", "Калимпорт",
                                 "Уотердип", "Торпедосити", "Санкт-Панда", "Петропетровск"};
 
-    private static String[] cityType = {"г. ", "смт ", "г. ", "г. ", "пос. ", "г. ", "г. ", "c. ", "г. ", "г. "};
+    private static String[] cityType = {"г. ", "пгт ", "г. ", "г. ", "пос. ", "г. ", "г. ", "c. ", "г. ", "г. "};
 
     private static String[] streets = { "Пушистых", "Космонавтов", "Мурзилки", "Красивых", "Норманская",
                                         "Петрова", "Варвары", "Пушкина", "Клубнички", "Победы демократии",
@@ -60,7 +62,7 @@ public class BigGenerator {
             String s = generateStreet();
 
             Point p = null;
-            int iterations = 1000000; // number of attempts to satisfy the condition of distance between post offices
+            int iterations = 100000; // number of attempts to satisfy the condition of distance between post offices
             do {
                 p = generateLocation(index, rectangle); // generates coordinates by index
                 if (isGoodPoint(p, points, distance)) { // check condition
@@ -99,6 +101,10 @@ public class BigGenerator {
 
 
 
+    public static Address generateAddress() {
+        return new AddressImpl(generateIndex(), generateStreet(), generateCityName(), countryName);
+    }
+
 
     /**
      * Generate location coordinates in specified area by index.
@@ -120,40 +126,46 @@ public class BigGenerator {
         if (index >= 10000 && index < 20000) {
             shiftX = 30;
             shiftY = 30;
-        }
-        if (index >= 20000 && index <30000) {
-            shiftX = zoneWidth;
-            shiftY = 30;
-        }
-        if (index >= 30000 && index <40000) {
-            shiftX = zoneWidth*2 - 50;
-            shiftY = 30;
-        }
-
-        if (index >= 40000 && index < 50000) {
-            shiftX = 30;
-            shiftY = zoneHeight;
-        }
-        if (index >= 50000 && index <60000) {
-            shiftX = zoneWidth;
-            shiftY = zoneHeight;
-        }
-        if (index >= 60000 && index <70000) {
-            shiftX = zoneWidth * 2 - 50;
-            shiftY = zoneHeight;
-        }
-
-        if (index >= 70000 && index < 80000) {
-            shiftX = 0;
-            shiftY = zoneHeight * 2 - 50;
-        }
-        if (index >= 80000 && index <90000) {
-            shiftX = zoneWidth;
-            shiftY = zoneHeight * 2 - 50;
-        }
-        if (index >= 90000 && index <100000) {
-            shiftX = zoneWidth * 2 - 30;
-            shiftY = zoneHeight * 2 - 50;
+        } else {
+            if (index >= 20000 && index < 30000) {
+                shiftX = zoneWidth;
+                shiftY = 30;
+            } else {
+                if (index >= 30000 && index < 40000) {
+                    shiftX = zoneWidth * 2 - 50;
+                    shiftY = 30;
+                } else {
+                    if (index >= 40000 && index < 50000) {
+                        shiftX = 30;
+                        shiftY = zoneHeight;
+                    } else {
+                        if (index >= 50000 && index < 60000) {
+                            shiftX = zoneWidth;
+                            shiftY = zoneHeight;
+                        } else {
+                            if (index >= 60000 && index < 70000) {
+                                shiftX = zoneWidth * 2 - 50;
+                                shiftY = zoneHeight;
+                            } else {
+                                if (index >= 70000 && index < 80000) {
+                                    shiftX = 0;
+                                    shiftY = zoneHeight * 2 - 50;
+                                } else {
+                                    if (index >= 80000 && index < 90000) {
+                                        shiftX = zoneWidth;
+                                        shiftY = zoneHeight * 2 - 50;
+                                    } else {
+                                        if (index >= 90000 && index < 100000) {
+                                            shiftX = zoneWidth * 2 - 30;
+                                            shiftY = zoneHeight * 2 - 50;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         Random r = new Random();
@@ -214,18 +226,15 @@ public class BigGenerator {
      */
     public static int generateIndex() {
         Random r = new Random();
-        int i1 = 0;
-        int i2 = 0;
-        int i3 = 0;
-        int i4 = 0;
-        int i5 = 0;
-            i1 = (r.nextInt(9)+1) * 10000;
-            i2 = (r.nextInt(9)+1) * 1000;
-            i3 = (r.nextInt(9)+1) * 100;
-            i4 = (r.nextInt(9)+1) * 10;
-            i5 = (r.nextInt(9)+1);
+        int i1 = (r.nextInt(9)+1) * 10000;
+        int i2 = (r.nextInt(9)+1) * 1000;
+        int i3 = (r.nextInt(9)+1) * 100;
+        int i4 = (r.nextInt(9)+1) * 10;
+        int i5 = (r.nextInt(9)+1);
         return i1+i2+i3+i4+i5;
     }
+
+
 
 
 

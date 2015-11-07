@@ -9,7 +9,7 @@ import java.awt.*;
 
 
 
-public class PostOfficeImpl implements PostOffice {
+public class PostOfficeImpl implements PostOffice, PostOfficeImproved {
 	
 	private Point location;
 	private Address address;

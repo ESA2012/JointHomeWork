@@ -5,6 +5,7 @@ import com.logistic.api.model.post.Package;
 import com.logistic.api.service.Storage;
 import com.logistic.impl.service.generators.BigGenerator;
 import com.logistic.impl.service.generators.RouteGenerator;
+import com.logistic.impl.service.generators.RouteType;
 
 import java.awt.*;
 import java.util.List;
@@ -17,26 +18,25 @@ public class DataStorage {
     public static final int POST_OFFICES = 0;
     public static final int PACKAGES = 1;
 
-    private static RouteMatrix matrix;
+    private static RouteMatrix matrixRoad;
+    private static RouteMatrix matrixAir;
 
     // ---------- Initialise Generators constants ----------
     public static final Rectangle AREA              = new Rectangle(800, 600);
-    public static final String COUNTRY_NAME         = "Утопия";
     public static final int POST_OFFICES_COUNT      = 30;   // N
     public static final int DISTANCE_BTWN_OFFICES   = 80;   // 0 - Rectangle AREA side
 
-    public static final int ROUTES_DESTINY          = 3;    // 0 - 9
-    public static final int MIN_ROUTE_LENGTH        = 0;    // 0 - Rectangle AREA side
-    public static final int MAX_ROUTE_LENGTH        = 180;  // 0 - Rectangle AREA side
     // ------------------------------------------------------
 
 
     static {
-        Storage.getInstance().putToStorage(POST_OFFICES, BigGenerator.generatePostOffices(
-                COUNTRY_NAME, POST_OFFICES_COUNT, AREA, DISTANCE_BTWN_OFFICES));
+        Storage.getInstance().putToStorage(POST_OFFICES,
+                BigGenerator.generatePostOffices(BigGenerator.countryName, POST_OFFICES_COUNT, AREA, DISTANCE_BTWN_OFFICES));
 
-        matrix = RouteGenerator.buildRandomMatrix(DataStorage.getPostOffices(),
-                ROUTES_DESTINY, MIN_ROUTE_LENGTH, MAX_ROUTE_LENGTH);
+        matrixRoad = RouteGenerator.buildRandomMatrix(DataStorage.getPostOffices(), RouteType.ROAD);
+
+        matrixAir = RouteGenerator.buildRandomMatrix(DataStorage.getPostOffices(), RouteType.AIR);
+
     }
 
 
@@ -55,9 +55,15 @@ public class DataStorage {
 //        Storage.getInstance().putToStorage(POST_OFFICES, offices);
 //    }
 
-    public static RouteMatrix getRouteMatrix() {
-        return matrix;
+
+    public static RouteMatrix getRoadRouteMatrix(RouteType routeType) {
+        switch (routeType) {
+            case ROAD: return matrixRoad;
+            case AIR: return matrixAir;
+            default: return null;
+        }
     }
+
 
     public static List<PostOffice> getPostOffices() {
         return Storage.getInstance().getById(POST_OFFICES);
