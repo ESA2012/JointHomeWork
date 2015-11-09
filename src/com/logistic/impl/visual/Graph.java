@@ -1,6 +1,9 @@
 package com.logistic.impl.visual;
 
-import com.logistic.api.model.post.PostOffice;
+import com.logistic.api.model.post.*;
+import com.logistic.api.model.post.Package;
+import com.logistic.api.model.transport.Transit;
+import com.logistic.impl.model.post.PostOfficeImproved;
 import com.logistic.impl.service.RouteMatrix;
 
 import javax.imageio.ImageIO;
@@ -27,20 +30,36 @@ public class Graph {
         g2d.fillRect(0, 0, width, height);
     }
 
-    public void drawNode(PostOffice postOffice, Color color) {
+    public void drawNode(PostOfficeImproved postOffice, Color color) {
         drawNode(postOffice, color, Color.WHITE);
     }
 
-    public void drawNodes(final List<PostOffice> postOfficeList) {
-        for(PostOffice p: postOfficeList) {
+    public void drawNodes(final List<PostOfficeImproved> postOfficeList) {
+        for(PostOfficeImproved p: postOfficeList) {
             drawNode(p, Color.DARK_GRAY, Color.YELLOW);
         }
     }
 
-    private void drawNode(PostOffice postOffice, Color nodeColor, Color textColor) {
+    private void drawNode(PostOfficeImproved postOffice, Color nodeColor, Color textColor) {
         Point point = postOffice.getGeolocation();
         g2d.setColor(nodeColor);
         g2d.fillOval(point.x - 15, point.y - 15, 30, 30);
+        //drawIndex(postOffice, textColor);
+        drawPTypes(postOffice);
+    }
+
+    private void drawPTypes (PostOfficeImproved postOffice) {
+        Point point = postOffice.getGeolocation();
+        g2d.setFont(new Font("Liberation Sans", 0, 8));
+        g2d.setColor(new Color(220, 150, 0));
+        int yshift = -15;
+        for (Package.Type pt: postOffice.getAcceptablePackageTypes()) {
+            g2d.drawString(pt.toString(), point.x-9, point.y+(yshift+=10));
+        }
+    }
+
+    private void drawIndex(PostOfficeImproved postOffice, Color textColor) {
+        Point point = postOffice.getGeolocation();
         g2d.setFont(new Font("Liberation Sans", 0, 9));
         g2d.setColor(textColor);
         String index = String.valueOf(postOffice.getAddress().getCode());
@@ -48,7 +67,7 @@ public class Graph {
     }
 
 
-    public void drawRoutes(final RouteMatrix matrix, final List<PostOffice> postOfficeList, Color color) {
+    public void drawRoutes(final RouteMatrix matrix, final List<PostOfficeImproved> postOfficeList, Color color) {
         g2d.setColor(color);
         boolean[][] m = matrix.getMatrix();
         int size = m.length;
@@ -61,7 +80,21 @@ public class Graph {
                 }
             }
         }
+    }
 
+
+    public void drawTransit(Transit transit, Color color) {
+        if (transit == null) {
+            return;
+        }
+        g2d.setColor(color);
+        g2d.setStroke(new BasicStroke(5));
+        for (int i = 0; i < transit.getTransitOffices().size() - 1; i++) {
+            Point p1 = transit.getTransitOffices().get(i).getGeolocation();
+            Point p2 = transit.getTransitOffices().get(i+1).getGeolocation();
+            g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
+        }
+        g2d.setStroke(new BasicStroke(1));
     }
 
 

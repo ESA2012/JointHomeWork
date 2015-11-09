@@ -8,8 +8,7 @@ import com.logistic.impl.model.post.PostOfficeImpl;
 import javafx.scene.shape.Circle;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by SnakE on 07.11.2015.
@@ -56,12 +55,15 @@ public class BigGenerator {
             points[m] = new Point(0,0);
         }
 
+        // Using TreeMap for sorting by index
+        Map<Integer, PostOffice> tempStorage = new TreeMap<Integer, PostOffice>();
+
         for (int i = 0; i < count; i++) {
             int index = generateIndex();
             String c = generateCityName();
             String s = generateStreet();
 
-            Point p = null;
+            Point p;
             int iterations = 100000; // number of attempts to satisfy the condition of distance between post offices
             do {
                 p = generateLocation(index, rectangle); // generates coordinates by index
@@ -71,10 +73,34 @@ public class BigGenerator {
                 }
                 iterations--;
             } while (iterations > 0);
-
-            posts.add(new PostOfficeImpl(new AddressImpl(index, s, c, country), p, Package.Type.T_25));
+            tempStorage.put(index, new PostOfficeImpl(new AddressImpl(index, s, c, country), p, generatePackageTypes()));
         }
+
+        // Convert Map to Set for further return as array list
+        Set<Map.Entry<Integer, PostOffice>> set = tempStorage.entrySet();
+        for (Map.Entry<Integer, PostOffice> me: set) {
+            posts.add(me.getValue());
+        }
+
         return posts;
+    }
+
+
+    /**
+     * Generate random package type set.
+     * @return package type set
+     */
+    private static Set<Package.Type> generatePackageTypes() {
+        Set<Package.Type> typeSet = new HashSet<Package.Type>();
+        int typeCount = Package.Type.values().length;
+        Random rnd = new Random();
+        int x = rnd.nextInt(typeCount * 10);
+            if (x >= 0) typeSet.add(Package.Type.T_10);
+            if (x > 10) typeSet.add(Package.Type.T_25);
+            if (x > 30) typeSet.add(Package.Type.T_27);
+            if (x > 40) typeSet.add(Package.Type.T_30);
+            if (x > 45) typeSet.add(Package.Type.T_CP);
+        return typeSet;
     }
 
 
@@ -92,8 +118,6 @@ public class BigGenerator {
             if (czz.contains(p.x, p.y)) {
                 res = false;
                 break;
-            } else {
-                continue;
             }
         }
         return res;
@@ -186,9 +210,9 @@ public class BigGenerator {
      */
     public static String generateStreet() {
         Random r = new Random();
-        boolean ok = false;
-        String st = null;
-        String s = null;
+        boolean ok;
+        String st;
+        String s;
         do {
             int i = r.nextInt(streets.length);
             int j = r.nextInt(streetsType.length);

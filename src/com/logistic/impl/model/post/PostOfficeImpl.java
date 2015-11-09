@@ -2,48 +2,78 @@ package com.logistic.impl.model.post;
 
 import com.logistic.api.model.person.Address;
 import com.logistic.api.model.post.Package;
-import com.logistic.api.model.post.PostOffice;
 import com.logistic.api.model.post.Stamp;
 
 import java.awt.*;
+import java.util.*;
 
 
-
-public class PostOfficeImpl implements PostOffice, PostOfficeImproved {
+public class PostOfficeImpl implements PostOfficeImproved {
 	
 	private Point location;
 	private Address address;
-    private Package.Type type;
-    
-	public PostOfficeImpl(Address address, Point location, Package.Type type) {
+    private Set<Package.Type> types;
+
+
+    /**
+     * Post office constructor.
+     * @param address     post office address
+     * @param location    post office coordinates
+     * @param types       acceptable package types
+     */
+    public PostOfficeImpl(Address address, Point location, Set<Package.Type> types) {
 		this.location = location;
 		this.address = address;
-		this.type = type;
+		this.types = types;
 	}
 
 
-	public void setType(Package.Type type) {
-		this.type = type;
-	}
-
-	@Override
+    /**
+     * Returns new instance of stamp
+     * @return new stamp
+     */
+    @Override
     public Stamp getStamp() {
         return new StampImpl(this);
     }
 
+
+    /**
+     * Returns post office address (code, street, city, country)
+     * @return address
+     */
     @Override
     public Address getAddress() {
         return address;
     }
 
-    @Override
+    @Deprecated
     public Package.Type getAcceptableTypes() {
-        return type;
+        // TODO придумать как реализовать этот метод - максимально допустимый тип?
+        return null;
     }
 
+
+
+    /**
+     * Returns maximum allowed package weight to accept by post office
+     * @return maximum weight or 0 (any weight is allowed)
+     */
     @Override
     public int getMaxWeight() {
-        return type.getMaxWeight();
+        int maxw = 0;
+        for(Package.Type pt: types) {
+            int ptweight = pt.getMaxWeight();
+            if (ptweight == 0) {
+                maxw = 0;
+                break;
+            } else {
+                if (ptweight > maxw) {
+                    maxw = ptweight;
+                }
+            }
+        }
+        return maxw;
     }
 
     @Override
@@ -68,11 +98,21 @@ public class PostOfficeImpl implements PostOffice, PostOfficeImproved {
         }
     }
 
+
+    /**
+     * Returns post office code (index / zip code)
+     * @return index / zip code
+     */
     @Override
     public int getCode() {
         return address.getCode();
     }
 
+
+    /**
+     * Returns post office coordinates
+     * @return Point
+     */
     @Override
     public Point getGeolocation() {
         return location;
@@ -80,7 +120,16 @@ public class PostOfficeImpl implements PostOffice, PostOfficeImproved {
 
     @Override
     public String toString() {
-        return address.toString() + " ("+location.getX()+", "+location.getY()+")";
+        return address.toString() + " ("+location.getX()+", "+location.getY()+")  " + types;
     }
 
+
+    /**
+     * Returns set of allowed package type
+     * @return set of package types
+     */
+    @Override
+    public Set<Package.Type> getAcceptablePackageTypes() {
+        return types;
+    }
 }

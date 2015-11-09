@@ -1,6 +1,7 @@
 package com.logistic.impl.service.generators;
 
 import com.logistic.api.model.post.PostOffice;
+import com.logistic.impl.model.post.PostOfficeImproved;
 import com.logistic.impl.service.DataStorage;
 import com.logistic.impl.service.RouteMatrix;
 
@@ -20,7 +21,7 @@ public class RouteGenerator {
      * @param rt            route type
      * @return              builded matrix
      */
-    public static RouteMatrix buildRandomMatrix(List<PostOffice> postOffices, RouteType rt) {
+    public static RouteMatrix buildRandomMatrix(List<PostOfficeImproved> postOffices, RouteType rt) {
 
         int density = rt.getRoutesDestiny();
         double distanceMin = rt.getMinRouteLength();
@@ -34,7 +35,7 @@ public class RouteGenerator {
         for (int i = 0; i < nodes; i++) {
             for (int j = 0; j < i + 1; j++) {
                 int n = rnd.nextInt(rt.getRandomValue());
-                boolean b = n > density? true : false;
+                boolean b = n > density;
 
                 Point p1 = postOffices.get(i).getGeolocation();
                 Point p2 = postOffices.get(j).getGeolocation();

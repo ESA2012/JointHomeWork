@@ -15,5 +15,4 @@ public interface SenderService {
     boolean sendPackage(Package parcel, Transit transit);
     PostOffice getPackageCurrentPosition(String id);
     double getMilesToDestination(String id);
-
 }

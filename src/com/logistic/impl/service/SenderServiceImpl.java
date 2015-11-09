@@ -5,38 +5,48 @@ import com.logistic.api.model.post.*;
 import com.logistic.api.model.post.Package;
 import com.logistic.api.model.transport.Transit;
 import com.logistic.api.service.SenderService;
+import com.logistic.impl.model.post.PostOfficeImproved;
 import com.logistic.impl.model.transport.TransitImpl;
+import com.logistic.impl.service.generators.RouteType;
+
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 
 /**
  * Created by SnakE on 04.11.2015.
  */
-public class SenderServiceImpl implements SenderService {
+public class SenderServiceImpl implements SenderServiceImproved {
+
+    @Deprecated
+    public List<PostOffice> getAllOffices() {
+        return null;
+    }
 
     @Override
-    public List<PostOffice> getAllOffices() {
+    public List<PostOfficeImproved> getAllOfficesImr() {
         return DataStorage.getPostOffices();
     }
+
+
 
 
     private static double distance(Point a, Point b) {
         return a.distance(b);
     }
 
-
     /**
      * Search closest Post office
      * @param address    address to search closest post office
      * @return  closest post office
      */
-    public static PostOffice findClosestPostOffice(Address address) {
+    @Override
+    public PostOfficeImproved findClosestPostOffice(Address address) {
         int personIndx = address.getCode();
         int min = Integer.MAX_VALUE;
-        PostOffice post = null;
-        for (PostOffice p: DataStorage.getPostOffices()) {
+        PostOfficeImproved post = null;
+        for (PostOfficeImproved p: DataStorage.getPostOffices()) {
             int postIndx = p.getCode();
             int close = Math.abs(personIndx - postIndx);
             if (close < min) {
@@ -47,38 +57,67 @@ public class SenderServiceImpl implements SenderService {
         return post;
     }
 
-
-
     @Override
     public List<Transit> calculatePossibleTransits(Package parcel) {
         // TODO: raise exception if parcel is null
         PostOffice send = findClosestPostOffice(parcel.getSenderAddress());
         PostOffice dest = findClosestPostOffice(parcel.getReceiverAddress());
 
-        // Selecting post offices only with allowed package type
-        Package.Type packType = parcel.getType();
-        List<PostOffice> allowableOffices = new ArrayList<PostOffice>();
-        for (PostOffice p : DataStorage.getPostOffices()) {
-            if (packType == p.getAcceptableTypes()) {
-                allowableOffices.add(p);
+        List<Transit> transits = new ArrayList<Transit>();
+
+        // Start index for route matrix
+        int nodeS = DataStorage.getPostOffices().indexOf(send);
+        int nodeF = DataStorage.getPostOffices().indexOf(dest);
+
+        // опредение количества всех вершин
+        int nodesCount = DataStorage.getPostOffices().size();
+
+        // TODO : поиск пути вынести в отдельный класс PathFinder
+        // TODO : добавить поиск пути с учетом воздушных и морских путей сообщений
+
+        // Получение ссылки на матрицу смежности
+        RouteMatrix matrix = DataStorage.getRoadRouteMatrix(RouteType.ROAD);
+        boolean[] marked = new boolean[nodesCount];
+        Deque<Integer> queue = new ArrayDeque<Integer>();
+
+        int[] nodeLast = new int[nodesCount];
+
+        marked[nodeS] = true;
+        queue.add(nodeS);
+
+        while (queue.peek()!=null) {
+            int node1 = queue.pollFirst();
+            for(int node2 = 0; node2 < nodesCount; node2++) {
+                if (matrix.isConnected(node1, node2)) {
+                    if (DataStorage.getPostOffices().get(node2).getAcceptablePackageTypes().contains(parcel.getType())) {
+                        if (!marked[node2]) {
+                            marked[node2] = true;
+                            nodeLast[node2] = node1;
+                            queue.add(node2);
+                        }
+                    }
+                }
             }
         }
 
-        List<Transit> transits = new ArrayList<Transit>();
-
         Transit transit = new TransitImpl();
-        transit.getTransitOffices().add(0, send);
 
-        for (PostOffice p: allowableOffices) {
-            if (!transit.getTransitOffices().contains(p)) {
-                //TODO поиск путей
-            }
+        for (int x = nodeF; x != nodeS; x = nodeLast[x]) {
+            transit.getTransitOffices().add(0, getPO(x));
+        }
+
+        if (!marked[nodeF]) {
+            System.out.println("Нет дороги!");
+        } else {
+            transit.getTransitOffices().add(0, getPO(nodeS));
         }
 
         transits.add(transit);
-        transit.getTransitOffices().add(1, dest);
-
         return transits;
+    }
+
+    private PostOffice getPO(int i) {
+        return DataStorage.getPostOffices().get(i);
     }
 
 
