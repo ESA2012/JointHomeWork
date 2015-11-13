@@ -1,9 +1,7 @@
-package com.logistic.impl.service.generators;
+package com.logistic.impl.service.esa.generators;
 
-import com.logistic.api.model.post.PostOffice;
 import com.logistic.impl.model.post.PostOfficeImproved;
-import com.logistic.impl.service.DataStorage;
-import com.logistic.impl.service.RouteMatrix;
+import com.logistic.impl.service.esa.routes.RouteMatrix;
 
 import java.awt.*;
 import java.util.List;
@@ -30,6 +28,8 @@ public class RouteGenerator {
 
         RouteMatrix matrix = new RouteMatrix(nodes);
 
+        int val = rt.ordinal() + 1;
+
         Random rnd = new Random();
 
         for (int i = 0; i < nodes; i++) {
@@ -43,8 +43,8 @@ public class RouteGenerator {
                 b = (p1.distance(p2) > distanceMax)? false:b;
                 b = (i == j)? false : b;
 
-                matrix.getMatrix()[i][j] = b;
-                matrix.getMatrix()[j][i] = b;
+                matrix.getArray()[i][j] = b? val:0;
+                matrix.getArray()[j][i] = b? val:0;
             }
         }
         return matrix;

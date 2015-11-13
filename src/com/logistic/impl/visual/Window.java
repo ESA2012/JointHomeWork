@@ -11,22 +11,22 @@ import java.awt.image.BufferedImage;
  * Created by SnakE on 06.11.2015.
  */
 public class Window {
-
-    private BufferedImage img;
-
-    public void setImg(BufferedImage img) {
-        this.img = img;
-    }
-
+    private JFrame window;
     private Canvas canvas;
 
-    public void show() {
-        JFrame window = new JFrame("Граф");
+    public Window() {
+        window = new JFrame("Граф");
         window.setSize(800, 600);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         canvas = new Canvas();
         window.add(canvas);
         window.setVisible(true);
+    }
+
+    private BufferedImage img;
+
+    public void setImg(BufferedImage img) {
+        this.img = img;
     }
 
     public void update() {

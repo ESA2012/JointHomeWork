@@ -3,13 +3,16 @@ package com.logistic.impl.service;
 import com.logistic.api.model.person.Address;
 import com.logistic.api.model.post.*;
 import com.logistic.api.model.post.Package;
+import com.logistic.api.model.transport.DeliveryTransport;
 import com.logistic.api.model.transport.Transit;
-import com.logistic.api.service.SenderService;
 import com.logistic.impl.model.post.PostOfficeImproved;
+import com.logistic.impl.model.transport.DeliveryTransportImproved;
 import com.logistic.impl.model.transport.TransitImpl;
-import com.logistic.impl.service.generators.RouteType;
+import com.logistic.impl.model.transport.TransitImproved;
+import com.logistic.impl.service.esa.routes.PathFinder;
+import com.logistic.impl.service.esa.routes.RouteMatrix;
+import sun.awt.image.ImageWatched;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -19,22 +22,33 @@ import java.util.List;
  */
 public class SenderServiceImpl implements SenderServiceImproved {
 
+
+    /**
+     * Use <b>getAllOfficesImpr</b>
+     * @return
+     */
     @Deprecated
     public List<PostOffice> getAllOffices() {
         return null;
     }
 
+    @Deprecated
     @Override
-    public List<PostOfficeImproved> getAllOfficesImr() {
+    public List<TransitImproved> calculatePossibleTransits(Package parcel) {
+        return calculatePossibleTransitsImproved(parcel);
+    }
+
+
+    /**
+     * Returns post offices list
+     * @return list of post offices
+     */
+    @Override
+    public List<PostOfficeImproved> getAllOfficesImpr() {
         return DataStorage.getPostOffices();
     }
 
 
-
-
-    private static double distance(Point a, Point b) {
-        return a.distance(b);
-    }
 
     /**
      * Search closest Post office
@@ -57,68 +71,141 @@ public class SenderServiceImpl implements SenderServiceImproved {
         return post;
     }
 
+
+
+    /**
+     * Returns all possible transits for package
+     * @param parcel    package
+     * @return          list of transits
+     */
     @Override
-    public List<Transit> calculatePossibleTransits(Package parcel) {
+    public List<TransitImproved> calculatePossibleTransitsImproved(Package parcel) {
         // TODO: raise exception if parcel is null
-        PostOffice send = findClosestPostOffice(parcel.getSenderAddress());
-        PostOffice dest = findClosestPostOffice(parcel.getReceiverAddress());
+        Set<TransitImproved> transitSet = new LinkedHashSet<TransitImproved>();
+        addTransitToSet(getTransit(parcel, new DeliveryTransport.Type[] {DeliveryTransport.Type.LAND}), transitSet);
+        addTransitToSet(getTransit(parcel, new DeliveryTransport.Type[] {DeliveryTransport.Type.LAND, DeliveryTransport.Type.AIR}), transitSet);
+        addTransitToSet(getTransit(parcel, new DeliveryTransport.Type[] {DeliveryTransport.Type.LAND, DeliveryTransport.Type.SEA}), transitSet);
+        addTransitToSet(getTransit(parcel, new DeliveryTransport.Type[] {DeliveryTransport.Type.LAND, DeliveryTransport.Type.AIR, DeliveryTransport.Type.SEA}), transitSet);
 
-        List<Transit> transits = new ArrayList<Transit>();
+        List<TransitImproved> transits = new ArrayList<TransitImproved>();
+        transits.addAll(transitSet);
 
-        // Start index for route matrix
-        int nodeS = DataStorage.getPostOffices().indexOf(send);
-        int nodeF = DataStorage.getPostOffices().indexOf(dest);
+//        path(parcel, new DeliveryTransport.Type[] {DeliveryTransport.Type.LAND});
 
-        // опредение количества всех вершин
-        int nodesCount = DataStorage.getPostOffices().size();
 
-        // TODO : поиск пути вынести в отдельный класс PathFinder
-        // TODO : добавить поиск пути с учетом воздушных и морских путей сообщений
-
-        // Получение ссылки на матрицу смежности
-        RouteMatrix matrix = DataStorage.getRoadRouteMatrix(RouteType.ROAD);
-        boolean[] marked = new boolean[nodesCount];
-        Deque<Integer> queue = new ArrayDeque<Integer>();
-
-        int[] nodeLast = new int[nodesCount];
-
-        marked[nodeS] = true;
-        queue.add(nodeS);
-
-        while (queue.peek()!=null) {
-            int node1 = queue.pollFirst();
-            for(int node2 = 0; node2 < nodesCount; node2++) {
-                if (matrix.isConnected(node1, node2)) {
-                    if (DataStorage.getPostOffices().get(node2).getAcceptablePackageTypes().contains(parcel.getType())) {
-                        if (!marked[node2]) {
-                            marked[node2] = true;
-                            nodeLast[node2] = node1;
-                            queue.add(node2);
-                        }
-                    }
-                }
-            }
-        }
-
-        Transit transit = new TransitImpl();
-
-        for (int x = nodeF; x != nodeS; x = nodeLast[x]) {
-            transit.getTransitOffices().add(0, getPO(x));
-        }
-
-        if (!marked[nodeF]) {
-            System.out.println("Нет дороги!");
-        } else {
-            transit.getTransitOffices().add(0, getPO(nodeS));
-        }
-
-        transits.add(transit);
         return transits;
     }
 
+
+//
+//    private Transit path(Package parcel, DeliveryTransport.Type[] allowedTypes) {
+//        List<PostOfficeImproved> posts = new ArrayList<>();
+//
+//        PostOfficeImproved send = findClosestPostOffice(parcel.getSenderAddress());
+//        PostOfficeImproved dest = findClosestPostOffice(parcel.getReceiverAddress());
+//
+//
+//        List<DeliveryTransportImproved> edges = DataStorage.getDeliveryTransports();
+//        List<DeliveryTransportImproved> path = new ArrayList<DeliveryTransportImproved>();
+//
+//        DeliveryTransportImproved last = findDeliveryTransports(send);
+//        int l = DataStorage.getDeliveryTransports().indexOf(last);
+//        int f = DataStorage.getDeliveryTransports().indexOf(findDeliveryTransports(dest));
+//
+//        TransitImproved transit = new TransitImpl(posts);
+//        return transit;
+//    }
+
+
+    private DeliveryTransportImproved findDeliveryTransports(PostOffice a, PostOffice b) {
+        List<DeliveryTransportImproved> edges = DataStorage.getDeliveryTransports();
+        DeliveryTransportImproved res = null;
+        for (DeliveryTransportImproved d: edges) {
+            PostOffice da = d.getStartPostOffice();
+            PostOffice db = d.getDestinationPostOffice();
+            if (((a == da) && (b == db)) || ((a == db) && (b == da))) {
+                res = d;
+                break;
+            }
+        }
+        return res;
+    }
+
+    private DeliveryTransportImproved findDeliveryTransports(PostOffice a) {
+        List<DeliveryTransportImproved> edges = DataStorage.getDeliveryTransports();
+        DeliveryTransportImproved res = null;
+        for (DeliveryTransportImproved d: edges) {
+            PostOffice da = d.getStartPostOffice();
+            PostOffice db = d.getDestinationPostOffice();
+            if ((a == da) || (a == db)) {
+                res = d;
+                break;
+            }
+        }
+        return res;
+    }
+
+
+    /**
+     * Calculates transit for package with given route matrix
+     * @param parcel        package
+     * @return              calculated transit
+     */
+    private TransitImproved getTransit(Package parcel, DeliveryTransport.Type[] allowedTypes) {
+        int[] types = new int[allowedTypes.length];
+        for (int i = 0; i < types.length; i++) {
+            int t = 0;
+            switch (allowedTypes[i]) {
+                case LAND: t = 1;
+                    break;
+                case AIR: t = 2;
+                    break;
+                case SEA: t = 3;
+                    break;
+            }
+            types[i] = t;
+        }
+
+        PostOffice send = findClosestPostOffice(parcel.getSenderAddress());
+        PostOffice dest = findClosestPostOffice(parcel.getReceiverAddress());
+        // Indexes of start and destination nodes
+        int startNode = DataStorage.getPostOffices().indexOf(send);
+        int finishNode = DataStorage.getPostOffices().indexOf(dest);
+
+        PathFinder pfAll = new PathFinder(startNode, parcel, types);
+        TransitImproved transit = new TransitImpl(new ArrayList<PostOfficeImproved>());
+        if (pfAll.hasWayTo(finishNode)) {
+            for (int x : pfAll.findPath(finishNode)) {
+                transit.getTransitOffices().add(getPO(x));
+            }
+        }
+
+        return transit;
+    }
+
+
+
+    /**
+     * Adds transit to set of transits
+     * @param transit       Transit
+     * @param transitSet    Set of Transits
+     */
+    private void addTransitToSet(TransitImproved transit, Set<TransitImproved> transitSet) {
+        if (transit!=null) {
+            transitSet.add(transit);
+        }
+    }
+
+
+    /**
+     * Returns Post office by index
+     * @param i     index
+     * @return      Post office
+     */
     private PostOffice getPO(int i) {
         return DataStorage.getPostOffices().get(i);
     }
+
 
 
     @Override
@@ -126,6 +213,7 @@ public class SenderServiceImpl implements SenderServiceImproved {
         if (parcel == null || transit == null) return false;
         return false;
     }
+
 
     @Override
     public PostOffice getPackageCurrentPosition(String id) {
@@ -152,6 +240,8 @@ public class SenderServiceImpl implements SenderServiceImproved {
         //TODO : realise method
         return 0;
     }
+
+
 
     /**
      * Search post office in storage by address

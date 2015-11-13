@@ -1,11 +1,11 @@
-package com.logistic.impl.service.generators;
+package com.logistic.impl.service.esa.generators;
 
 
 /**
  * Created by snake on 07.11.15.
  */
 public enum RouteType {
-    ROAD(11, 3, 0, 180), AIR(51, 48, 350, 600);
+    LAND(11, 3, 0, 180), AIR(51, 49, 350, 600), SEA(51, 49, 500, 600);
 
     int randomValue;
     int routesDestiny;

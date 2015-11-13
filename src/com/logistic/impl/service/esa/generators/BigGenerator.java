@@ -1,4 +1,4 @@
-package com.logistic.impl.service.generators;
+package com.logistic.impl.service.esa.generators;
 
 import com.logistic.api.model.person.Address;
 import com.logistic.api.model.post.*;
@@ -48,7 +48,7 @@ public class BigGenerator {
      * @param distance  minimum allowed distance between post offices
      */
     public static ArrayList<PostOffice> generatePostOffices (String country, int count, Rectangle rectangle, double distance) {
-        ArrayList<PostOffice> posts = new ArrayList<PostOffice>();
+        ArrayList<PostOffice> posts = new ArrayList<>();
         // Points array for checking distance between post offices
         Point[] points = new Point[count];
         for (int m = 0; m < points.length; m++) {
@@ -56,7 +56,7 @@ public class BigGenerator {
         }
 
         // Using TreeMap for sorting by index
-        Map<Integer, PostOffice> tempStorage = new TreeMap<Integer, PostOffice>();
+        Map<Integer, PostOffice> tempStorage = new TreeMap<>();
 
         for (int i = 0; i < count; i++) {
             int index = generateIndex();
@@ -91,14 +91,14 @@ public class BigGenerator {
      * @return package type set
      */
     private static Set<Package.Type> generatePackageTypes() {
-        Set<Package.Type> typeSet = new HashSet<Package.Type>();
+        Set<Package.Type> typeSet = new HashSet<>();
         int typeCount = Package.Type.values().length;
         Random rnd = new Random();
         int x = rnd.nextInt(typeCount * 10);
             if (x >= 0) typeSet.add(Package.Type.T_10);
-            if (x > 10) typeSet.add(Package.Type.T_25);
-            if (x > 30) typeSet.add(Package.Type.T_27);
-            if (x > 40) typeSet.add(Package.Type.T_30);
+            if (x > 5) typeSet.add(Package.Type.T_25);
+            if (x > 10) typeSet.add(Package.Type.T_27);
+            if (x > 35) typeSet.add(Package.Type.T_30);
             if (x > 45) typeSet.add(Package.Type.T_CP);
         return typeSet;
     }

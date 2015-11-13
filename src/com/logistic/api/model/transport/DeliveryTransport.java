@@ -11,7 +11,8 @@ public interface DeliveryTransport {
     PostOffice getDestinationPostOffice();
 
     enum Type {
-        SEA(10, 2.5), AIR(50, 25.2), LAND(18, 1.26);
+//        SEA(10, 2.5), AIR(50, 25.2), LAND(18, 1.26);
+        SEA(4, 1.05), AIR(60, 4.5), LAND(8, 2.5);
 
         private int speed;
         private double costPerMile;
