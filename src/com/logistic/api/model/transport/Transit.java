@@ -10,4 +10,8 @@ import java.util.List;
 public interface Transit {
     List<PostOffice> getTransitOffices();
     double getPrice();
+
+    // Added by esa
+    int getTime();
+    double getOverallRange();
 }

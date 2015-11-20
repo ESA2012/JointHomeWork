@@ -1,9 +1,14 @@
 package com.logistic.impl.visual;
 
 
+import com.logistic.api.model.post.Package;
+import com.logistic.impl.model.post.PostOfficeImproved;
+import com.logistic.impl.service.DataStorage;
+
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ListDataListener;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 
 
@@ -11,38 +16,33 @@ import java.awt.image.BufferedImage;
  * Created by SnakE on 06.11.2015.
  */
 public class Window {
-    private JFrame window;
-    private Canvas canvas;
 
-    public Window() {
-        window = new JFrame("Граф");
-        window.setSize(800, 600);
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        canvas = new Canvas();
-        window.add(canvas);
-        window.setVisible(true);
+    private Graph graph;
+
+    public Window(Rectangle graphArea) {
+        JPanel content = new JPanel();
+
+        content.setLayout(null);
+
+        JButton button1 = new JButton("Button 1");
+        button1.setBounds(graphArea.width+20, 10, 100, 24);
+        content.add(button1);
+
+        graph = new Graph(graphArea);
+        graph.setBounds(10,10, graphArea.width, graphArea.height);
+        content.add(graph);
+
+        JFrame frame = new JFrame("Граф");
+        frame.setContentPane(content);
+
+        frame.setSize(graphArea.width + 200, graphArea.height + 100);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        frame.setVisible(true);
     }
 
-    private BufferedImage img;
-
-    public void setImg(BufferedImage img) {
-        this.img = img;
+    public Graph getGraph() {
+        return graph;
     }
-
-    public void update() {
-        canvas.repaint();
-    }
-
-    private class Canvas extends JComponent {
-        @Override
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Graphics2D g2d = (Graphics2D) g;
-            if (img != null) {
-                g2d.drawImage(img, 0,0, null);
-            }
-        }
-    }
-
 
 }

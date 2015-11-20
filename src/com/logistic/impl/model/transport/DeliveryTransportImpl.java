@@ -1,12 +1,6 @@
 package com.logistic.impl.model.transport;
 
 import com.logistic.api.model.post.PostOffice;
-import com.logistic.api.model.transport.DeliveryTransport;
-import com.logistic.impl.model.post.PostOfficeImproved;
-import com.logistic.impl.service.DataStorage;
-import com.logistic.impl.service.esa.routes.RouteMatrix;
-
-import java.util.List;
 
 
 public class DeliveryTransportImpl implements DeliveryTransportImproved {
@@ -24,7 +18,7 @@ public class DeliveryTransportImpl implements DeliveryTransportImproved {
         this.type = type;
         range = officeA.getGeolocation().distance(officeB.getGeolocation());
         price = ((int)((getRange()*type.getCostPerMile())*100)) / 100d;
-        time = (int)getRange()/type.getSpeed();
+        time = ((int)getRange()/type.getSpeed()) * 300;
     }
 
 

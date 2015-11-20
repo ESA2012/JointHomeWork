@@ -1,6 +1,4 @@
-package com.logistic.impl.service.esa.routes;
-
-import com.logistic.api.model.transport.DeliveryTransport;
+package com.logistic.impl.service.esa.generators;
 
 /**
  * Created by SnakE on 06.11.2015.

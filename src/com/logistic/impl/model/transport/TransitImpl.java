@@ -2,18 +2,22 @@ package com.logistic.impl.model.transport;
 
 import com.logistic.api.model.post.PostOffice;
 import com.logistic.api.model.transport.Transit;
-import com.logistic.impl.model.post.PostOfficeImproved;
-
-import java.util.ArrayList;
 import java.util.List;
 
 
 
-public class TransitImpl implements TransitImproved {
+public class TransitImpl implements Transit {
     private final List<PostOffice> route;
+    private final double cost;
+    private final double range;
+    private final int time;
 
-    public TransitImpl(List<PostOfficeImproved> postOfficesList) {
-        route = new ArrayList<>();
+
+    public TransitImpl(List<PostOffice> postOfficesList, double cost, double range, int time) {
+        route = postOfficesList;
+        this.cost = cost;
+        this.range = range;
+        this.time = time;
     }
 
 
@@ -24,17 +28,17 @@ public class TransitImpl implements TransitImproved {
 
     @Override
     public double getPrice() {
-        return 0;
+        return cost;
     }
 
     @Override
     public int getTime() {
-        return 0;
+        return time;
     }
 
     @Override
     public double getOverallRange() {
-        return 0;
+        return range;
     }
 
     @Override

@@ -2,13 +2,15 @@ package com.logistic.impl.model.post;
 
 import com.logistic.api.model.person.Address;
 import com.logistic.api.model.post.Package;
+import com.logistic.api.model.post.PostOffice;
 import com.logistic.api.model.post.Stamp;
+import com.logistic.impl.service.exceptions.NullPackageException;
 
 import java.awt.*;
 import java.util.*;
 
 
-public class PostOfficeImpl implements PostOfficeImproved {
+public class PostOfficeImpl implements PostOffice {
 	
 	private Point location;
 	private Address address;
@@ -49,8 +51,7 @@ public class PostOfficeImpl implements PostOfficeImproved {
 
     @Deprecated
     public Package.Type getAcceptableTypes() {
-        // TODO придумать как реализовать этот метод - максимально допустимый тип?
-        return null;
+        return types.iterator().next();
     }
 
 
@@ -76,25 +77,33 @@ public class PostOfficeImpl implements PostOfficeImproved {
         return maxw;
     }
 
+
+    /**
+     * Returns true if package can be send to next post office,
+     * and returns false when package receiver address and a post office address is equals
+     * @param parcel a Package object
+     * @return
+     * @throws NullPackageException when Package is null
+     */
     @Override
-    public boolean sendPackage(Package parcel) {
-        // TODO реализовать метод
-    	if(parcel.getPackageId()!=null){
-        return true;
-        } else {
-    	return false;}
+    public boolean sendPackage(Package parcel) throws NullPackageException{
+        if (parcel == null) throw new NullPackageException();
+        return !((PackageImproved) parcel).getReceiverPostOfficeAddreess().equals(address);
     }
 
+
+    /**
+     *
+     * @param parcel
+     * @return
+     */
     @Override
     public boolean receivePackage(Package parcel) {
-        // TODO реализовать метод
-        if (parcel.getReceiverFullName()!= null &&
-                parcel.getReceiverAddress()!= null &&
-                parcel != null) {
+        if (parcel != null) {
             parcel.getStamps().add(new StampImpl(this));
-    		return true;
+            return true;
         } else {
-        	return false;
+            return false;
         }
     }
 

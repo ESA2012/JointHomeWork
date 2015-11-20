@@ -1,55 +1,96 @@
 package com.logistic.impl.visual;
 
 import com.logistic.api.model.post.Package;
+import com.logistic.api.model.post.PostOffice;
 import com.logistic.api.model.transport.Transit;
-import com.logistic.impl.model.post.PostOfficeImproved;
-import com.logistic.impl.model.transport.DeliveryTransportImpl;
 import com.logistic.impl.model.transport.DeliveryTransportImproved;
-import com.logistic.impl.model.transport.TransitImproved;
-import com.logistic.impl.service.esa.routes.RouteMatrix;
+
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+
 /**
  * Created by SnakE on 06.11.2015.
  */
-public class Graph {
-    private BufferedImage img;
-    private Graphics2D g2d;
+public class Graph extends JPanel{
+    private List<PostOffice> postOffices;
+    private List<DeliveryTransportImproved> deliveries;
+    private List<Transit> transits;
+    private PostOfficeInfo officeInfo = PostOfficeInfo.INDEX;
+    private boolean directions = false;
+    private int graphWidth;
+    private int graphHeight;
+
+
+    public void setDirections(boolean d) {
+        directions = d;
+        this.repaint();
+    }
+
+
+    public void setOfficeInfo(PostOfficeInfo i) {
+        officeInfo = i;
+        this.repaint();
+    }
+
+
+
+    public void setPostOffices (List<PostOffice> n, List<DeliveryTransportImproved> e) {
+        postOffices = n;
+        deliveries = e;
+        this.repaint();
+    }
+
+    public void setTransits (List<Transit> t) {
+        transits = t;
+        this.repaint();
+    }
+
 
     public Graph(Rectangle rect) {
-        int width = rect.width;
-        int height = rect.height;
-        img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        g2d = img.createGraphics();
-        g2d.setColor(Color.white);
-        g2d.fillRect(0, 0, width, height);
+        graphWidth = this.getWidth();
+        graphHeight = this.getHeight();
+        this.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        this.setBackground(Color.white);
     }
 
-    public void drawNode(PostOfficeImproved postOffice, Color color) {
-        drawNode(postOffice, color, Color.WHITE);
+
+
+    private void drawNode(Graphics2D g2d, PostOffice postOffice, Color color) {
+        drawNode(g2d, postOffice, color, Color.WHITE, officeInfo);
     }
 
-    public void drawNodes(final List<PostOfficeImproved> postOfficeList) {
-        for(PostOfficeImproved p: postOfficeList) {
-            drawNode(p, Color.DARK_GRAY, Color.YELLOW);
+    private void drawNodes(Graphics2D g2d, final List<PostOffice> postOfficeList) {
+        for(PostOffice p: postOfficeList) {
+            drawNode(g2d, p, Color.DARK_GRAY, Color.YELLOW, officeInfo);
         }
     }
 
-    private void drawNode(PostOfficeImproved postOffice, Color nodeColor, Color textColor) {
+    private void drawNode(Graphics2D g2d, PostOffice postOffice, Color nodeColor, Color textColor, PostOfficeInfo info) {
         Point point = postOffice.getGeolocation();
         g2d.setColor(nodeColor);
         g2d.fillOval(point.x - 15, point.y - 15, 30, 30);
-        drawIndex(postOffice, textColor);
-        //drawPTypes(postOffice);
+
+        switch (info) {
+            case INDEX: drawIndex(g2d, postOffice, textColor);
+                break;
+            case PACKAGE: drawPTypes(g2d, postOffice);
+                break;
+        }
     }
 
-    private void drawPTypes (PostOfficeImproved postOffice) {
+
+    public enum PostOfficeInfo {INDEX, PACKAGE}
+
+
+    private void drawPTypes (Graphics2D g2d, PostOffice postOffice) {
         Point point = postOffice.getGeolocation();
         g2d.setFont(new Font("Liberation Sans", 0, 8));
         g2d.setColor(new Color(220, 150, 0));
@@ -59,7 +100,9 @@ public class Graph {
         }
     }
 
-    private void drawIndex(PostOfficeImproved postOffice, Color textColor) {
+
+
+    private void drawIndex(Graphics2D g2d, PostOffice postOffice, Color textColor) {
         Point point = postOffice.getGeolocation();
         g2d.setFont(new Font("Liberation Sans", 0, 9));
         g2d.setColor(textColor);
@@ -68,32 +111,51 @@ public class Graph {
     }
 
 
-    public void drawRoutes(List<DeliveryTransportImproved> links) {
+    private void drawEdges(Graphics2D g2d, List<DeliveryTransportImproved> links, boolean drawDirection) {
         Color[] colors = {
-                new Color(0, 100, 250),
-                new Color(0, 200, 250),
-                new Color(150, 160, 150),
-                new Color(200, 100, 200)
+                new Color(120, 160, 200),
+                new Color(150, 200, 200),
+                new Color(150, 200, 150),
+                new Color(200, 150, 150)
         };
         for (DeliveryTransportImproved d: links) {
             Point point1 = d.getStartPostOffice().getGeolocation();
             Point point2 = d.getDestinationPostOffice().getGeolocation();
             g2d.setColor(colors[d.getType().ordinal()]);
-            g2d.drawLine(point1.x, point1.y, point2.x, point2.y);
+
+            if (drawDirection) {
+                g2d.draw(new Line2D.Double(point1, point2));
+                Point middle = new Point();
+                middle.setLocation((point1.x + point2.x) / 2d, (point1.y + point2.y) / 2d);
+                drawArrowHead(g2d, middle, point1);
+            } else {
+                g2d.drawLine(point1.x, point1.y, point2.x, point2.y);
+            }
         }
     }
 
 
 
+    private void drawArrowHead(Graphics2D g2, Point tip, Point tail)
+    {
+        double phi = Math.toRadians(30);
+        int barb = 10;
+        double dy = tip.y - tail.y;
+        double dx = tip.x - tail.x;
+        double theta = Math.atan2(dy, dx);
+        double x, y, rho = theta + phi;
+        for(int j = 0; j < 2; j++)
+        {
+            x = tip.x - barb * Math.cos(rho);
+            y = tip.y - barb * Math.sin(rho);
+            g2.draw(new Line2D.Double(tip.x, tip.y, x, y));
+            rho = theta - phi;
+        }
+    }
 
 
-    public void drawTransit(Transit transit, Color color, int thickness, float offset) {
-        if (transit == null) {
-            return;
-        }
-        if (transit.getTransitOffices().size()<2) {
-            return;
-        }
+
+    private void drawWay(Graphics2D g2d, Transit transit, Color color, int thickness, float offset) {
         BasicStroke path = new BasicStroke(
                 thickness,
                 BasicStroke.CAP_SQUARE,
@@ -112,11 +174,10 @@ public class Graph {
     }
 
 
-    public void drawTransits(final List<TransitImproved> transits) {
-        if (transits == null) return;
+    private void drawWays(Graphics2D g2d, final List<Transit> transits) {
         int thickness = 6;
         Color[] c = {
-                new Color(100, 250, 100),
+                new Color(0, 250, 0),
                 new Color(100, 200, 200),
                 new Color(0, 100, 200),
                 new Color(150, 250, 150),
@@ -125,16 +186,41 @@ public class Graph {
         int i = 0;
         float offset = 0;
         for (Transit t: transits) {
-            drawTransit(t, c[i++], thickness, offset += 5);
+            drawWay(g2d, t, c[i++], thickness, offset += 5);
         }
     }
 
 
-    public BufferedImage getImage() {
-        return img;
+    private void drawPostOffices(Graphics2D g) {
+        if (deliveries != null) {
+            drawEdges(g, deliveries, directions);
+        }
+        if (postOffices != null) {
+            drawNodes(g, postOffices);
+        }
     }
 
+
+    private void drawTransits(Graphics2D g) {
+        if (transits != null) {
+            drawWays(g, transits);
+        }
+    }
+
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        drawTransits(g2d);
+        drawPostOffices(g2d);
+    }
+
+
+
     public boolean saveGraphImage(String filename) {
+        BufferedImage img = new BufferedImage(graphWidth, graphHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = img.createGraphics();
+        paintComponent(g);
         try {
             File outF = new File(filename);
             ImageIO.write(img, "PNG", outF);
