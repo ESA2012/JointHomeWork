@@ -23,10 +23,21 @@ public class Graph extends JPanel{
     private List<PostOffice> postOffices;
     private List<DeliveryTransportImproved> deliveries;
     private List<Transit> transits;
+    private Transit transit;
+    private Package aPackage;
     private PostOfficeInfo officeInfo = PostOfficeInfo.INDEX;
     private boolean directions = false;
-    private int graphWidth;
-    private int graphHeight;
+    private boolean showAllTransits = true;
+
+
+    private PostOffice lastKnownPostOffice;
+    public void setLastKnownPostOffice(PostOffice lastKnownPostOffice) {
+        this.lastKnownPostOffice = lastKnownPostOffice;
+    }
+
+    public void setShowAllTransits(boolean show) {
+        showAllTransits = show;
+    }
 
 
     public void setDirections(boolean d) {
@@ -41,6 +52,10 @@ public class Graph extends JPanel{
     }
 
 
+    public void setPackage(Package aPackage) {
+        this.aPackage = aPackage;
+    }
+
 
     public void setPostOffices (List<PostOffice> n, List<DeliveryTransportImproved> e) {
         postOffices = n;
@@ -50,13 +65,16 @@ public class Graph extends JPanel{
 
     public void setTransits (List<Transit> t) {
         transits = t;
-        this.repaint();
+    }
+
+    public void setTransit(Transit transit) {
+        this.transit = transit;
     }
 
 
-    public Graph(Rectangle rect) {
-        graphWidth = this.getWidth();
-        graphHeight = this.getHeight();
+    public Graph(Dimension dimension) {
+        this.setSize(dimension);
+        this.setPreferredSize(dimension);
         this.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
         this.setBackground(Color.white);
     }
@@ -67,9 +85,28 @@ public class Graph extends JPanel{
         drawNode(g2d, postOffice, color, Color.WHITE, officeInfo);
     }
 
+
+
     private void drawNodes(Graphics2D g2d, final List<PostOffice> postOfficeList) {
+        PostOffice a = null;
+        PostOffice b = null;
+        if (transit != null) {
+            a = transit.getTransitOffices().get(0);
+            b = transit.getTransitOffices().get(transit.getTransitOffices().size()-1);
+        }
         for(PostOffice p: postOfficeList) {
-            drawNode(g2d, p, Color.DARK_GRAY, Color.YELLOW, officeInfo);
+            Color nodeColor = Color.DARK_GRAY;
+            Color textColor = Color.YELLOW;
+            if (p == a) {
+                nodeColor = new Color(0,0,200);
+                textColor = Color.WHITE;
+            } else {
+                if (p == b) {
+                    nodeColor = new Color(0, 150, 0);
+                    textColor = Color.WHITE;
+                }
+            }
+            drawNode(g2d, p, nodeColor, textColor, officeInfo);
         }
     }
 
@@ -155,13 +192,13 @@ public class Graph extends JPanel{
 
 
 
-    private void drawWay(Graphics2D g2d, Transit transit, Color color, int thickness, float offset) {
+    private void drawWay(Graphics2D g2d, Transit transit, Color color, int interval, int thickness, float[] dash, float offset) {
         BasicStroke path = new BasicStroke(
                 thickness,
                 BasicStroke.CAP_SQUARE,
                 BasicStroke.JOIN_BEVEL,
-                10,
-                new float[] {15,20},
+                interval,
+                dash,
                 offset);
         g2d.setColor(color);
         g2d.setStroke(path);
@@ -186,24 +223,38 @@ public class Graph extends JPanel{
         int i = 0;
         float offset = 0;
         for (Transit t: transits) {
-            drawWay(g2d, t, c[i++], thickness, offset += 5);
+            drawWay(g2d, t, c[i++], 10, thickness, new float[] {15,20}, offset += 5);
         }
     }
 
 
     private void drawPostOffices(Graphics2D g) {
-        if (deliveries != null) {
-            drawEdges(g, deliveries, directions);
-        }
         if (postOffices != null) {
             drawNodes(g, postOffices);
         }
     }
 
 
+    private void drawDeliveries(Graphics2D g) {
+        if (deliveries != null) {
+            drawEdges(g, deliveries, directions);
+        }
+    }
+
+
+
+    private void drawTransit(Graphics2D g) {
+        if (transit != null) {
+            drawWay(g, transit, Color.RED, 0, 3, new float[] {5,0}, 0);
+        }
+    }
+
+
     private void drawTransits(Graphics2D g) {
         if (transits != null) {
-            drawWays(g, transits);
+            if (showAllTransits) {
+               drawWays(g, transits);
+            }
         }
     }
 
@@ -212,13 +263,18 @@ public class Graph extends JPanel{
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         drawTransits(g2d);
+        drawDeliveries(g2d);
+        drawTransit(g2d);
         drawPostOffices(g2d);
+        if (lastKnownPostOffice != null) {
+            drawNode(g2d, lastKnownPostOffice, Color.MAGENTA);
+        }
     }
 
 
 
     public boolean saveGraphImage(String filename) {
-        BufferedImage img = new BufferedImage(graphWidth, graphHeight, BufferedImage.TYPE_INT_RGB);
+        BufferedImage img = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g = img.createGraphics();
         paintComponent(g);
         try {

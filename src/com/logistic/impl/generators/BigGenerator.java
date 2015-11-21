@@ -1,4 +1,4 @@
-package com.logistic.impl.service.esa.generators;
+package com.logistic.impl.generators;
 
 import com.logistic.api.model.person.Address;
 import com.logistic.api.model.post.*;
@@ -44,10 +44,10 @@ public class BigGenerator {
      * Generates post offices list
      * @param country country name
      * @param count the number of post offices
-     * @param rectangle area for post offices placement
+     * @param dimension area for post offices placement
      * @param distance  minimum allowed distance between post offices
      */
-    public static ArrayList<PostOffice> generatePostOffices (String country, int count, Rectangle rectangle, double distance) {
+    public static ArrayList<PostOffice> generatePostOffices (String country, int count, Dimension dimension, double distance) {
         ArrayList<PostOffice> posts = new ArrayList<>();
         // Points array for checking distance between post offices
         Point[] points = new Point[count];
@@ -66,7 +66,7 @@ public class BigGenerator {
             Point p;
             int iterations = 100000; // number of attempts to satisfy the condition of distance between post offices
             do {
-                p = generateLocation(index, rectangle); // generates coordinates by index
+                p = generateLocation(index, dimension); // generates coordinates by index
                 if (isGoodPoint(p, points, distance)) { // check condition
                     points[i] = p;
                     break;
@@ -134,12 +134,12 @@ public class BigGenerator {
      * Generate location coordinates in specified area by index.
      * Area divides by 9 subareas. Each subarea have appropriate range of indexes
      * @param index    index (Zip code analogue)
-     * @param rect     area
+     * @param dimension     area
      * @return
      */
-    private static Point generateLocation(int index, Rectangle rect) {
-        int overallWidth = rect.width;
-        int overallHeight = rect.height;
+    private static Point generateLocation(int index, Dimension dimension) {
+        int overallWidth = dimension.width;
+        int overallHeight = dimension.height;
 
         int zoneWidth = overallWidth / 3;
         int zoneHeight = overallHeight / 3;
@@ -218,11 +218,7 @@ public class BigGenerator {
             int j = r.nextInt(streetsType.length);
             st = streetsType[j];
             s = streets[i];
-            if (((j == 2) || (j == 8)) && ((s.endsWith("я")))) {
-                ok = false;
-            } else {
-                ok = true;
-            }
+            ok = !(((j == 2) || (j == 8)) && ((s.endsWith("я"))));
         } while (!ok);
         return st+s+", "+r.nextInt(100);
     }

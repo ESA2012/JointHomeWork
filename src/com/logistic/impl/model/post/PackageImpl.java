@@ -36,7 +36,7 @@ public class PackageImpl implements PackageImproved {
         this.type = type;
         this.weight = weight;
         this.packageId = generateID();
-        stamps = new ArrayList<Stamp>();
+        stamps = new ArrayList<>();
         poReceiverAddr = findClosestPostOffice(receiver.getAddress()).getAddress();
         poSenderAddr = findClosestPostOffice(sender.getAddress()).getAddress();
     }
@@ -126,5 +126,9 @@ public class PackageImpl implements PackageImproved {
     @Override
     public Address getReceiverPostOfficeAddreess() {
         return poReceiverAddr;
+    }
+
+    public String toString() {
+        return packageId + " : " + sender.getAddress().getCode() + " -> " + receiver.getAddress().getCode();
     }
 }

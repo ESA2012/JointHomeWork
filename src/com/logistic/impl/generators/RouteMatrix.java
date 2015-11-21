@@ -1,4 +1,4 @@
-package com.logistic.impl.service.esa.generators;
+package com.logistic.impl.generators;
 
 /**
  * Created by SnakE on 06.11.2015.
@@ -29,12 +29,6 @@ public class RouteMatrix {
 
 
 
-    public int isConnected(int indexA, int indexB) {
-        return matrix[indexA][indexB];
-    }
-
-
-
     public static RouteMatrix join(RouteMatrix matrix1, RouteMatrix matrix2) {
         int size = matrix2.getSize() > matrix1.getSize()? matrix1.getSize(): matrix2.getSize();
         RouteMatrix newMatrix = new RouteMatrix(size);
@@ -54,8 +48,8 @@ public class RouteMatrix {
         RouteMatrix res = new RouteMatrix(size);
         res.setArray(new int[size][size]);
 
-        for (int i = 0; i < matrixes.length; i++) {
-            res = join(res, matrixes[i]);
+        for (RouteMatrix matrixe : matrixes) {
+            res = join(res, matrixe);
         }
         return res;
     }

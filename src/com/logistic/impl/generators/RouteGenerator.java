@@ -1,4 +1,4 @@
-package com.logistic.impl.service.esa.generators;
+package com.logistic.impl.generators;
 
 import com.logistic.api.model.post.PostOffice;
 import com.logistic.api.model.transport.DeliveryTransport;
@@ -42,9 +42,9 @@ public class RouteGenerator {
 
                 Point p1 = postOffices.get(i).getGeolocation();
                 Point p2 = postOffices.get(j).getGeolocation();
-                b = (p1.distance(p2) < distanceMin)? false:b;
-                b = (p1.distance(p2) > distanceMax)? false:b;
-                b = (i == j)? false : b;
+                b = (p1.distance(p2) >= distanceMin) && b;
+                b = (p1.distance(p2) <= distanceMax) && b;
+                b = (i != j) && b;
 
                 matrix.getArray()[i][j] = b? val:0;
                 matrix.getArray()[j][i] = b? val:0;
@@ -55,7 +55,7 @@ public class RouteGenerator {
 
 
     public static List<DeliveryTransportImproved> buildDeliveryTransports(RouteMatrix matrix, List<PostOffice> posts) {
-        List<DeliveryTransportImproved> dts = new ArrayList<DeliveryTransportImproved>();
+        List<DeliveryTransportImproved> dts = new ArrayList<>();
 
         int[][] m = matrix.getArray();
 

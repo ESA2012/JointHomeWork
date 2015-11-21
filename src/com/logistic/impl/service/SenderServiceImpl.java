@@ -70,18 +70,17 @@ public class SenderServiceImpl implements SenderServiceImproved {
 
 
     /**
-     * Returns all possible transits for package
+     * Returns all possible transits for given package
      * @param parcel    package
      * @return          list of transits
      */
     @Override
     public List<Transit> calculatePossibleTransits(Package parcel) throws NullPackageException{
         if (parcel == null) throw new NullPackageException();
-        Set<Transit> transitSet = new LinkedHashSet<Transit>();
+        Set<Transit> transitSet = new LinkedHashSet<>();
         addTransitToSet(getTransit(parcel, new DeliveryTransport.Type[] {DeliveryTransport.Type.LAND}), transitSet);
         addTransitToSet(getTransit(parcel, new DeliveryTransport.Type[] {DeliveryTransport.Type.LAND, DeliveryTransport.Type.AIR}), transitSet);
         addTransitToSet(getTransit(parcel, new DeliveryTransport.Type[] {DeliveryTransport.Type.LAND, DeliveryTransport.Type.SEA}), transitSet);
-        addTransitToSet(getTransit(parcel, new DeliveryTransport.Type[] {DeliveryTransport.Type.LAND, DeliveryTransport.Type.AIR, DeliveryTransport.Type.SEA}), transitSet);
 
         List<Transit> transits = new ArrayList<>();
         transits.addAll(transitSet);
@@ -96,9 +95,10 @@ public class SenderServiceImpl implements SenderServiceImproved {
         PostOffice send = findOfficeByAddress(((PackageImproved) parcel).getReceiverPostOfficeAddreess());
         PostOffice dest = findOfficeByAddress(((PackageImproved) parcel).getSenderPostOfficeAddress());
 
-        List<PostOffice> closed = new ArrayList<>();
-        List<DeliveryTransportImproved> edges = new ArrayList<>();
-        Deque<PostOffice> opened = new ArrayDeque<>();
+        // Dynamical calculation all available routes between sender post office and receiver post office
+        List<PostOffice> closed = new ArrayList<>();                // visited nodes
+        List<DeliveryTransportImproved> edges = new ArrayList<>();  // edges from current node
+        Deque<PostOffice> opened = new ArrayDeque<>();              // current node queue
 
         closed.add(send);
         opened.add(send);
@@ -120,15 +120,15 @@ public class SenderServiceImpl implements SenderServiceImproved {
             }
         }
 
+        // Recovery transit
         List<PostOffice> temp = new ArrayList<>();
-
         if (closed.contains(dest)) {
             for (PostOffice x = dest; x != send; x = findTDSendByDest(x, edges)) {
                 temp.add(0, x);
             }
             temp.add(0, send);
         }
-
+        // Calculate overall range, price and time
         double range = 0;
         double price = 0;
         int time = 0;
@@ -139,8 +139,8 @@ public class SenderServiceImpl implements SenderServiceImproved {
             time += dt.getTime();
         }
 
+        // Build result transit
         Collections.reverse(temp);
-
         if (temp.size() < 2) {
             return null;
         } else {
@@ -148,6 +148,14 @@ public class SenderServiceImpl implements SenderServiceImproved {
         }
     }
 
+
+
+    /**
+     * Search firts post office by second post office and delivery transports collection
+     * @param p         second post office
+     * @param edges     delivery transport collection
+     * @return          first post office
+     */
     private PostOffice findTDSendByDest(PostOffice p, List<DeliveryTransportImproved> edges) {
         PostOffice res = null;
         for(DeliveryTransportImproved t: edges) {
@@ -159,6 +167,13 @@ public class SenderServiceImpl implements SenderServiceImproved {
     }
 
 
+
+    /**
+     * Search for delivery transport between two post offices
+     * @param a    first post office
+     * @param b    second post office
+     * @return     delivery transport (or null if there are no such delivery transport)
+     */
     private DeliveryTransportImproved findDeliveryTransports(PostOffice a, PostOffice b) {
         List<DeliveryTransportImproved> edges = DataStorage.getDeliveryTransports();
         DeliveryTransportImproved res = null;
@@ -175,6 +190,15 @@ public class SenderServiceImpl implements SenderServiceImproved {
 
 
 
+    /**
+     * Sends specified package for a given route (transit)
+     * @param parcel     package
+     * @param transit    route (transit)
+     * @return  <b>true</b> if package has reached destination post office
+     *          <b>false</b> if package has not reached destination post office
+     * @throws NullPackageException     if package is null
+     * @throws NullTransitException     if transit is null
+     */
     @Override
     public boolean sendPackage(Package parcel, Transit transit) throws NullPackageException, NullTransitException {
         if (parcel == null) throw new NullPackageException();
@@ -183,25 +207,14 @@ public class SenderServiceImpl implements SenderServiceImproved {
         DataStorage.saveParcelTransit(parcel, transit);
         List<PostOffice> posts = transit.getTransitOffices();
 
-        System.out.println(transit);
-
-        Thread thread = new Thread(new Runnable() {
-            boolean result = false;
+        Thread sender = new Thread(new Runnable() {
+            private boolean result = false;
             @Override
             public void run() {
                 for (int i = 0; i < posts.size(); i++) {
 
-                    boolean canSend = true;
-
                     PostOffice post = posts.get(i);
-
-                    System.out.println(posts.get(i).getCode());
-
-                    try {
-                        canSend = post.sendPackage(parcel);
-                    } catch (NullPackageException e) {
-                        e.printStackTrace();
-                    }
+                    boolean received = post.receivePackage(parcel);
 
                     // Calculating time to go from post office 1 to post office 2
                     int time = 0;
@@ -217,46 +230,75 @@ public class SenderServiceImpl implements SenderServiceImproved {
                         break;
                     }
 
-                    boolean received = post.receivePackage(parcel);
+                    boolean canSend = true;
+
+                    try {
+                        canSend = post.sendPackage(parcel);
+                    } catch (NullPackageException e) {
+                        e.printStackTrace();
+                    }
 
                     result = received && !canSend;
                 }
-                if (result) {
-                    System.out.println(parcel.getPackageId() + " is received!");
-                } else {
-                    System.out.println(parcel.getPackageId() + " is lost!");
-                }
+//                if (result) {
+//                    System.out.println(parcel.getPackageId() + " is received!");
+//                } else {
+//                    System.out.println(parcel.getPackageId() + " is lost!");
+//                }
             }
         });
-        thread.start();
+        sender.start();
         return true;
     }
 
 
+
+    /**
+     * Returns last known post office that has package received
+     * @param id    package id
+     * @return      PostOffice object or null
+     */
     @Override
     public PostOffice getPackageCurrentPosition(String id) {
-        if (id.length() != 10) return null;
-        // Search package by ID
-        Package pack = null;
-        List<Package> packages = DataStorage.getPackages();
-        for(Package p: packages) {
-            if(p.getPackageId().equals(id)) {
-                pack = p;
-            }
+        List<Stamp> stamps = DataStorage.getPackage(id).getStamps();
+        if (stamps == null) {
+                return null;
         }
-        // Get last pakage address
-        List<Stamp> stamps = pack.getStamps();
-        Address lastAddress = stamps.get(stamps.size() - 1).getPostOfficeAddress();
-        // Search Post Office by Address
+
+        if (stamps.size() < 1) {
+            return DataStorage.getTransit(id).getTransitOffices().get(0);
+        }
+
+        int lastStampIndx = stamps.size()-1;
+        Address lastAddress = stamps.get(lastStampIndx).getPostOfficeAddress();
         return findOfficeByAddress(lastAddress);
     }
 
 
+
+    /**
+     * Calculates distance from last known package position to destination post office
+     * @param id    package id
+     * @return      distance to destination post office or Double.MAX_VALUE (if distance is not computable)
+     */
     @Override
     public double getMilesToDestination(String id) {
+        PostOffice lastPostOffice = getPackageCurrentPosition(id);
+        Transit packageTransit = DataStorage.getTransit(id);
 
+        if (lastPostOffice == null || packageTransit == null) {
+            return Double.MAX_VALUE;
+        }
 
-        return 0;
+        List<PostOffice> transitOfficies = packageTransit.getTransitOffices();
+        double overallRange = packageTransit.getOverallRange();
+        int z = transitOfficies.indexOf(lastPostOffice);
+        double completedRange = 0;
+        for (int i = 0; i < z; i++) {
+            DeliveryTransportImproved dt = findDeliveryTransports(transitOfficies.get(i), transitOfficies.get(i+1));
+            completedRange +=dt.getRange();
+        }
+        return overallRange - completedRange;
     }
 
 
@@ -264,7 +306,7 @@ public class SenderServiceImpl implements SenderServiceImproved {
     /**
      * Search post office in storage by address
      * @param address   address of post office
-     * @return post office or null
+     * @return          PostOffice object or null (if search is failed)
      */
     private static PostOffice findOfficeByAddress(Address address) {
         PostOffice res = null;

@@ -1,4 +1,4 @@
-package com.logistic.impl.service.esa.generators;
+package com.logistic.impl.generators;
 
 
 /**

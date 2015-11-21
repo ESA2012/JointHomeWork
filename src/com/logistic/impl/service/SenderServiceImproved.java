@@ -5,8 +5,6 @@ import com.logistic.api.model.post.*;
 import com.logistic.api.service.SenderService;
 
 
-import java.util.List;
-
 /**
  * Created by SnakE on 08.11.2015.
  */
