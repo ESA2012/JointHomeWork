@@ -1,7 +1,7 @@
 package com.logistic.api.model.post;
 
 import com.logistic.api.model.person.Address;
-import com.logistic.impl.service.exceptions.NullPackageException;
+import com.logistic.impl.exceptions.NullPackageException;
 
 import java.awt.*;
 import java.util.Set;

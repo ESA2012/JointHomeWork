@@ -3,8 +3,8 @@ package com.logistic.api.service;
 import com.logistic.api.model.post.Package;
 import com.logistic.api.model.post.PostOffice;
 import com.logistic.api.model.transport.Transit;
-import com.logistic.impl.service.exceptions.NullPackageException;
-import com.logistic.impl.service.exceptions.NullTransitException;
+import com.logistic.impl.exceptions.NullPackageException;
+import com.logistic.impl.exceptions.NullTransitException;
 
 import java.util.List;
 

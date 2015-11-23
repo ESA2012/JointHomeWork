@@ -8,8 +8,8 @@ import com.logistic.api.model.transport.Transit;
 import com.logistic.impl.model.post.PackageImproved;
 import com.logistic.impl.model.transport.DeliveryTransportImproved;
 import com.logistic.impl.model.transport.TransitImpl;
-import com.logistic.impl.service.exceptions.NullPackageException;
-import com.logistic.impl.service.exceptions.NullTransitException;
+import com.logistic.impl.exceptions.NullPackageException;
+import com.logistic.impl.exceptions.NullTransitException;
 import java.util.*;
 import java.util.List;
 

@@ -4,7 +4,7 @@ import com.logistic.api.model.person.Address;
 import com.logistic.api.model.post.Package;
 import com.logistic.api.model.post.PostOffice;
 import com.logistic.api.model.post.Stamp;
-import com.logistic.impl.service.exceptions.NullPackageException;
+import com.logistic.impl.exceptions.NullPackageException;
 
 import java.awt.*;
 import java.io.Serializable;

@@ -16,8 +16,8 @@ import com.logistic.impl.model.transport.DeliveryTransportImpl;
 import com.logistic.impl.model.transport.DeliveryTransportImproved;
 import com.logistic.impl.service.DataStorage;
 import com.logistic.impl.service.SenderServiceImproved;
-import com.logistic.impl.service.exceptions.NullPackageException;
-import com.logistic.impl.service.exceptions.NullTransitException;
+import com.logistic.impl.exceptions.NullPackageException;
+import com.logistic.impl.exceptions.NullTransitException;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

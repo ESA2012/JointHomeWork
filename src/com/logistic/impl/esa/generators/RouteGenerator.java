@@ -116,6 +116,9 @@ public class RouteGenerator {
                             break;
                         case 3: t = DeliveryTransport.Type.SEA;
                     }
+                    if (t == null) {
+                        t = DeliveryTransport.Type.LAND;
+                    }
                     dts.add(new DeliveryTransportImpl(o1, o2, t));
                 }
             }
