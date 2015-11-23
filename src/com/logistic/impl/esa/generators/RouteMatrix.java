@@ -1,4 +1,4 @@
-package com.logistic.impl.generators;
+package com.logistic.impl.esa.generators;
 
 /**
  * Created by SnakE on 06.11.2015.

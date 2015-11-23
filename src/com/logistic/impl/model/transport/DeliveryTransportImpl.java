@@ -2,8 +2,10 @@ package com.logistic.impl.model.transport;
 
 import com.logistic.api.model.post.PostOffice;
 
+import java.io.Serializable;
 
-public class DeliveryTransportImpl implements DeliveryTransportImproved {
+
+public class DeliveryTransportImpl implements DeliveryTransportImproved, Serializable {
     private PostOffice officeA;
     private PostOffice officeB;
     private Type type;
@@ -17,8 +19,8 @@ public class DeliveryTransportImpl implements DeliveryTransportImproved {
         this.officeB = officeB;
         this.type = type;
         range = officeA.getGeolocation().distance(officeB.getGeolocation());
-        price = ((int)((getRange()*type.getCostPerMile())*100)) / 100d;
-        time = ((int)getRange()/type.getSpeed()) * 300;
+        price = getRange()*type.getCostPerMile();
+        time = (int)(getRange() / type.getSpeed() * 300);
     }
 
 

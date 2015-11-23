@@ -33,16 +33,54 @@ public class PackageImpl implements PackageImproved {
     public PackageImpl(Person sender, Person receiver, PackageImpl.Type type, int weight) {
         this.sender = sender;
         this.receiver = receiver;
-        this.type = type;
         this.weight = weight;
+        this.type = type;
         this.packageId = generateID();
         stamps = new ArrayList<>();
         poReceiverAddr = findClosestPostOffice(receiver.getAddress()).getAddress();
         poSenderAddr = findClosestPostOffice(sender.getAddress()).getAddress();
+        this.type = correctType(weight);
+    }
+
+
+    /**
+     * Corrects package type by its weight
+     * @param weight    weight
+     * @return          correct package type
+     */
+    private Type correctType(int weight) {
+        Type result = this.type;
+        if (weight > type.getMaxWeight()) {
+            int diff1 = Integer.MAX_VALUE;
+            Type newType = null;
+            int maxTypesWeight = 0;
+            for (Type t: Type.values()) {
+                int maxWeight = t.getMaxWeight();
+                int diff2 = maxWeight - weight;
+                if (maxWeight > maxTypesWeight) {
+                    maxTypesWeight = maxWeight;
+                }
+                if (diff2 > 0 && diff2 < diff1) {
+                    diff1 = diff2;
+                    newType = t;
+                }
+            }
+            if (weight > maxTypesWeight) {
+                result = Type.T_CP;
+            } else {
+                result = newType;
+            }
+        }
+        return result;
     }
 
 
 
+    /**
+     * Search for closest post office by given address
+     * @param address    address of sender/receiver
+     * @return           closest post office
+     */
     private PostOffice findClosestPostOffice(Address address) {
         int personIndx = address.getCode();
         int min = Integer.MAX_VALUE;

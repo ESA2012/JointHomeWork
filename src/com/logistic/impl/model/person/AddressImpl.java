@@ -2,11 +2,13 @@ package com.logistic.impl.model.person;
 
 import com.logistic.api.model.person.Address;
 
+import java.io.Serializable;
+
 
 /**
  * Created by SnakE on 02.11.2015.
  */
-public class AddressImpl implements Address {
+public class AddressImpl implements Address, Serializable {
     private String street;
     private String city;
     private String country;

@@ -5,15 +5,14 @@ import com.logistic.api.model.post.PostOffice;
 import com.logistic.api.model.transport.Transit;
 import com.logistic.api.service.Storage;
 import com.logistic.impl.model.transport.DeliveryTransportImproved;
-import com.logistic.impl.generators.BigGenerator;
-import com.logistic.impl.generators.RouteGenerator;
-import com.logistic.impl.generators.RouteType;
-import com.logistic.impl.generators.RouteMatrix;
+import com.logistic.impl.esa.generators.BigGenerator;
+import com.logistic.impl.esa.generators.RouteGenerator;
+import com.logistic.impl.esa.generators.RouteMatrix;
 
 import java.awt.*;
 import java.util.List;
 
-import static com.logistic.impl.generators.RouteGenerator.buildDeliveryTransports;
+import static com.logistic.impl.esa.generators.RouteGenerator.buildDeliveryTransports;
 
 
 /**
@@ -31,18 +30,25 @@ public class DataStorage {
 
         Storage.getInstance().putToStorage(POST_OFFICES_KEY, BigGenerator.generatePostOffices(BigGenerator.countryName, postOfficesCount, area, minDistance));
 
-        RouteMatrix matrixRoad = RouteGenerator.buildRandomMatrix(DataStorage.getPostOffices(), RouteType.LAND);
-        RouteMatrix matrixAir = RouteGenerator.buildRandomMatrix(DataStorage.getPostOffices(), RouteType.AIR);
-        RouteMatrix matrixSea = RouteGenerator.buildRandomMatrix(DataStorage.getPostOffices(), RouteType.SEA);
+        RouteMatrix matrixRoad = RouteGenerator.buildRandomMatrix(DataStorage.getPostOffices(), RouteGenerator.RouteType.LAND);
+        RouteMatrix matrixAir = RouteGenerator.buildRandomMatrix(DataStorage.getPostOffices(), RouteGenerator.RouteType.AIR);
+        RouteMatrix matrixSea = RouteGenerator.buildRandomMatrix(DataStorage.getPostOffices(), RouteGenerator.RouteType.SEA);
         RouteMatrix matrixComplete = RouteMatrix.join(matrixRoad, matrixAir, matrixSea);
 
         Storage.getInstance().putToStorage(DELIVERY_TRANSPORTS_KEY, buildDeliveryTransports(matrixComplete, DataStorage.getPostOffices()));
     }
 
 
+
+    public static void saveOfficesAndDeliveries(List<PostOffice> posts, List<DeliveryTransportImproved> deliveries) {
+        Storage.getInstance().putToStorage(POST_OFFICES_KEY, posts);
+        Storage.getInstance().putToStorage(DELIVERY_TRANSPORTS_KEY, deliveries);
+    }
+
+
+
     public static void saveParcelTransit(Package parcel, Transit transit) {
         Storage.getInstance().putToStorage(parcel.getPackageId(), parcel);
-        Storage.getInstance().putToStorage(PACKAGES_KEY, parcel);
         Storage.getInstance().putToStorage(parcel.getPackageId() + TRANSIT_PREFIX, transit);
     }
 
@@ -73,7 +79,14 @@ public class DataStorage {
         return Storage.getInstance().getById(POST_OFFICES_KEY);
     }
 
-    public static List<Package> getPackages() {
-        return Storage.getInstance().getById(PACKAGES_KEY);
+    public static PostOffice getByPostCode(int code) {
+        List<PostOffice> offices = Storage.getInstance().<List>getById(POST_OFFICES_KEY);
+        for(PostOffice postOffice : offices) {
+            if(postOffice.getCode() == code) {
+                return postOffice;
+            }
+        }
+        return null;
     }
+
 }

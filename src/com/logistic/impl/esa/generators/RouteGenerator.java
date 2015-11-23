@@ -1,4 +1,4 @@
-package com.logistic.impl.generators;
+package com.logistic.impl.esa.generators;
 
 import com.logistic.api.model.post.PostOffice;
 import com.logistic.api.model.transport.DeliveryTransport;
@@ -14,6 +14,43 @@ import java.util.Random;
  * Created by SnakE on 07.11.2015.
  */
 public class RouteGenerator {
+
+
+    /**
+     * Types of route provides three variants: by land, by air, by sea
+     */
+    public enum RouteType {
+        LAND(11, 3, 0, 200), AIR(51, 49, 400, 2000), SEA(51, 49, 600, 3000);
+
+        int randomValue;
+        int routesDestiny;
+        double minRouteLength;
+        double maxRouteLength;
+
+        RouteType(int randomValue, int routesDestiny, double minRouteLength, double maxRouteLength) {
+            this.randomValue = randomValue;
+            this.routesDestiny = routesDestiny;
+            this.minRouteLength = minRouteLength;
+            this.maxRouteLength = maxRouteLength;
+        }
+
+        public int getRandomValue() {
+            return randomValue;
+        }
+
+        public int getRoutesDestiny() {
+            return routesDestiny;
+        }
+
+        public double getMinRouteLength() {
+            return minRouteLength;
+        }
+
+        public double getMaxRouteLength() {
+            return maxRouteLength;
+        }
+    }
+
 
 
     /**
@@ -54,6 +91,12 @@ public class RouteGenerator {
     }
 
 
+    /**
+     * Converts route matrix to collection of delivery transports
+     * @param matrix    route matrix
+     * @param posts     post offices
+     * @return          a collection of delivery transport
+     */
     public static List<DeliveryTransportImproved> buildDeliveryTransports(RouteMatrix matrix, List<PostOffice> posts) {
         List<DeliveryTransportImproved> dts = new ArrayList<>();
 
@@ -81,6 +124,13 @@ public class RouteGenerator {
     }
 
 
+
+    /**
+     * Builds route matrix for given post offices from given list of delivery transport
+     * @param deliveryTransports    delivery transports
+     * @param posts                 post offices
+     * @return                      route matrix
+     */
     public static RouteMatrix buildMatrix(List<DeliveryTransportImproved> deliveryTransports, List<PostOffice> posts) {
         RouteMatrix matrix = new RouteMatrix(posts.size());
 

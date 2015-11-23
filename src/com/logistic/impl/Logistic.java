@@ -1,24 +1,23 @@
 package com.logistic.impl;
 
+import com.logistic.impl.esa.gui.MainWindow;
 import com.logistic.impl.service.DataStorage;
 import com.logistic.impl.service.SenderServiceImpl;
-import com.logistic.impl.visual.Window;
 
 import java.awt.*;
 
 
 
 public class Logistic {
-    final static Dimension GRAPH_SIZE = new Dimension(800,800);
 
-    public static void main(String[] args) throws InterruptedException {
+    public static final Dimension   WORLD_AREA          = new Dimension(800,800);
+    public static final int         POST_OFFICES_NUMBER = 40;
 
-        DataStorage.initializeByRandomData(GRAPH_SIZE, 40, 70);
+    public static void main(String[] args) throws InterruptedException, ClassNotFoundException {
 
-        SenderServiceImpl s = new SenderServiceImpl();
-        Window window = new Window(s, GRAPH_SIZE);
+        DataStorage.initializeByRandomData(WORLD_AREA, POST_OFFICES_NUMBER, 80);
 
-        window.getGraph().setPostOffices(s.getAllOffices(), DataStorage.getDeliveryTransports());
+        new MainWindow(new SenderServiceImpl()).getGraphPanel().setPostOffices(DataStorage.getPostOffices(), DataStorage.getDeliveryTransports());
 
     }
 

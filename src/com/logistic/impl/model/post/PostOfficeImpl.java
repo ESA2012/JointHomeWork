@@ -7,10 +7,11 @@ import com.logistic.api.model.post.Stamp;
 import com.logistic.impl.service.exceptions.NullPackageException;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.*;
 
 
-public class PostOfficeImpl implements PostOffice {
+public class PostOfficeImpl implements PostOffice, Serializable {
 	
 	private Point location;
 	private Address address;

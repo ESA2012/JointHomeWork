@@ -12,7 +12,7 @@ public interface DeliveryTransport {
 
     enum Type {
 //        SEA(10, 2.5), AIR(50, 25.2), LAND(18, 1.26);
-        SEA(4, 1.05), AIR(60, 4.5), LAND(8, 2.5);
+        SEA(4, 0.02), AIR(60, 0.10), LAND(8, 0.05);
 
         private int speed;
         private double costPerMile;

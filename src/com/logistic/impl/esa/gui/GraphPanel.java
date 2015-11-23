@@ -1,4 +1,4 @@
-package com.logistic.impl.visual;
+package com.logistic.impl.esa.gui;
 
 import com.logistic.api.model.post.Package;
 import com.logistic.api.model.post.PostOffice;
@@ -19,26 +19,53 @@ import java.util.List;
 /**
  * Created by SnakE on 06.11.2015.
  */
-public class Graph extends JPanel{
+public class GraphPanel extends JPanel{
+
+    public GraphPanel() {
+        this.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+        this.setBackground(Color.white);
+    }
+
+
+
     private List<PostOffice> postOffices;
     private List<DeliveryTransportImproved> deliveries;
-    private List<Transit> transits;
-    private Transit transit;
-    private Package aPackage;
-    private PostOfficeInfo officeInfo = PostOfficeInfo.INDEX;
-    private boolean directions = false;
-    private boolean showAllTransits = true;
 
+    public void setPostOffices (List<PostOffice> n, List<DeliveryTransportImproved> e) {
+        postOffices = n;
+        deliveries = e;
 
-    private PostOffice lastKnownPostOffice;
-    public void setLastKnownPostOffice(PostOffice lastKnownPostOffice) {
-        this.lastKnownPostOffice = lastKnownPostOffice;
+        int width = 0;
+        int height = 0;
+
+        for(PostOffice p: n) {
+            int x = p.getGeolocation().x;
+            int y = p.getGeolocation().y;
+            if (x > width) {
+                width = x + 50;
+            }
+            if (y > height) {
+                height = y + 50;
+            }
+        }
+        Dimension d = new Dimension(width, height);
+        this.setSize(d);
+        this.setPreferredSize(d);
+        this.repaint();
     }
+
+
+
+    private boolean showAllTransits = true;
 
     public void setShowAllTransits(boolean show) {
         showAllTransits = show;
+        this.repaint();
     }
 
+
+
+    private boolean directions = false;
 
     public void setDirections(boolean d) {
         directions = d;
@@ -46,39 +73,123 @@ public class Graph extends JPanel{
     }
 
 
+
+    public enum PostOfficeInfo {INDEX, PACKAGE}
+
+    private PostOfficeInfo officeInfo = PostOfficeInfo.INDEX;
+
     public void setOfficeInfo(PostOfficeInfo i) {
         officeInfo = i;
         this.repaint();
     }
 
 
-    public void setPackage(Package aPackage) {
-        this.aPackage = aPackage;
-    }
 
+    private Transit transit;
+    private List<Transit> transits;
+    private PostOffice lastKnownPostOffice;
 
-    public void setPostOffices (List<PostOffice> n, List<DeliveryTransportImproved> e) {
-        postOffices = n;
-        deliveries = e;
-        this.repaint();
+    public void setTransit(Transit transit) {
+        this.transit = transit;
     }
 
     public void setTransits (List<Transit> t) {
         transits = t;
     }
 
-    public void setTransit(Transit transit) {
-        this.transit = transit;
+    public void setLastKnownPostOffice(PostOffice lastKnownPostOffice) {
+        this.lastKnownPostOffice = lastKnownPostOffice;
+    }
+
+    public void setAll(Transit t, List<Transit> ts, PostOffice p) {
+        setTransit(t);
+        setTransits(ts);
+        setLastKnownPostOffice(p);
+        this.repaint();
     }
 
 
-    public Graph(Dimension dimension) {
-        this.setSize(dimension);
-        this.setPreferredSize(dimension);
-        this.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-        this.setBackground(Color.white);
+
+    private Point graphPoint;
+
+    public void setGraphPoint(Point graphPoint) {
+        this.graphPoint = graphPoint;
     }
 
+    public Point getGraphPoint() {
+        return graphPoint;
+    }
+
+
+
+    private void drawPostOffices(Graphics2D g) {
+        if (postOffices != null) {
+            drawNodes(g, postOffices);
+        }
+    }
+
+
+    private void drawDeliveries(Graphics2D g) {
+        if (deliveries != null) {
+            drawEdges(g, deliveries, directions);
+        }
+    }
+
+
+
+    private void drawTransit(Graphics2D g) {
+        if (transit != null) {
+            drawWay(g, transit, Color.RED, 0, 3, new float[]{5, 0}, 0);
+        }
+    }
+
+
+    private void drawTransits(Graphics2D g) {
+        if (transits != null) {
+            if (showAllTransits) {
+                drawWays(g, transits);
+            }
+        }
+    }
+
+
+    private void drawPackagePosition(Graphics2D g){
+        if (lastKnownPostOffice != null) {
+            drawNode(g, lastKnownPostOffice, new Color(50,150,150));
+        }
+    }
+
+
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        drawTransits(g2d);
+        drawDeliveries(g2d);
+        drawTransit(g2d);
+        drawPostOffices(g2d);
+        drawPackagePosition(g2d);
+    }
+
+
+
+    public boolean saveGraphImage(File file) {
+        BufferedImage img = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = img.createGraphics();
+        paintComponent(g);
+        try {
+            ImageIO.write(img, "PNG", file);
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    //                                      Drawing                                             //
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
 
     private void drawNode(Graphics2D g2d, PostOffice postOffice, Color color) {
@@ -110,6 +221,8 @@ public class Graph extends JPanel{
         }
     }
 
+
+
     private void drawNode(Graphics2D g2d, PostOffice postOffice, Color nodeColor, Color textColor, PostOfficeInfo info) {
         Point point = postOffice.getGeolocation();
         g2d.setColor(nodeColor);
@@ -123,8 +236,6 @@ public class Graph extends JPanel{
         }
     }
 
-
-    public enum PostOfficeInfo {INDEX, PACKAGE}
 
 
     private void drawPTypes (Graphics2D g2d, PostOffice postOffice) {
@@ -148,6 +259,7 @@ public class Graph extends JPanel{
     }
 
 
+
     private void drawEdges(Graphics2D g2d, List<DeliveryTransportImproved> links, boolean drawDirection) {
         Color[] colors = {
                 new Color(120, 160, 200),
@@ -158,7 +270,7 @@ public class Graph extends JPanel{
         for (DeliveryTransportImproved d: links) {
             Point point1 = d.getStartPostOffice().getGeolocation();
             Point point2 = d.getDestinationPostOffice().getGeolocation();
-            g2d.setColor(colors[d.getType().ordinal()]);
+            g2d.setColor(colors[d.getType().ordinal()%colors.length]);
 
             if (drawDirection) {
                 g2d.draw(new Line2D.Double(point1, point2));
@@ -211,6 +323,7 @@ public class Graph extends JPanel{
     }
 
 
+
     private void drawWays(Graphics2D g2d, final List<Transit> transits) {
         int thickness = 6;
         Color[] c = {
@@ -223,67 +336,8 @@ public class Graph extends JPanel{
         int i = 0;
         float offset = 0;
         for (Transit t: transits) {
-            drawWay(g2d, t, c[i++], 10, thickness, new float[] {15,20}, offset += 5);
+            drawWay(g2d, t, c[i++%c.length], 10, thickness, new float[] {15,20}, offset += 5);
         }
-    }
-
-
-    private void drawPostOffices(Graphics2D g) {
-        if (postOffices != null) {
-            drawNodes(g, postOffices);
-        }
-    }
-
-
-    private void drawDeliveries(Graphics2D g) {
-        if (deliveries != null) {
-            drawEdges(g, deliveries, directions);
-        }
-    }
-
-
-
-    private void drawTransit(Graphics2D g) {
-        if (transit != null) {
-            drawWay(g, transit, Color.RED, 0, 3, new float[] {5,0}, 0);
-        }
-    }
-
-
-    private void drawTransits(Graphics2D g) {
-        if (transits != null) {
-            if (showAllTransits) {
-               drawWays(g, transits);
-            }
-        }
-    }
-
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        drawTransits(g2d);
-        drawDeliveries(g2d);
-        drawTransit(g2d);
-        drawPostOffices(g2d);
-        if (lastKnownPostOffice != null) {
-            drawNode(g2d, lastKnownPostOffice, Color.MAGENTA);
-        }
-    }
-
-
-
-    public boolean saveGraphImage(String filename) {
-        BufferedImage img = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = img.createGraphics();
-        paintComponent(g);
-        try {
-            File outF = new File(filename);
-            ImageIO.write(img, "PNG", outF);
-        } catch (IOException e) {
-            return false;
-        }
-        return true;
     }
 
 }

@@ -1,10 +1,17 @@
-package com.logistic.impl.generators;
+package com.logistic.impl.esa.generators;
 
 import com.logistic.api.model.person.Address;
+import com.logistic.api.model.person.FullName;
+import com.logistic.api.model.person.Person;
 import com.logistic.api.model.post.*;
 import com.logistic.api.model.post.Package;
 import com.logistic.impl.model.person.AddressImpl;
+import com.logistic.impl.model.person.FullNameImpl;
+import com.logistic.impl.model.person.PersonImpl;
+import com.logistic.impl.model.post.PackageImpl;
+import com.logistic.impl.model.post.PackageImproved;
 import com.logistic.impl.model.post.PostOfficeImpl;
+import com.logistic.impl.service.DataStorage;
 import javafx.scene.shape.Circle;
 
 import java.awt.*;
@@ -37,6 +44,50 @@ public class BigGenerator {
                                         "Рублёвая", "Китайская", "Дождя", "Небесная"};
 
     private static String[] streetsType = {"ул. ", "ул. ", "переулок ", "ул. ", "ул. ", "площадь ", "ул. ", "ул. ", "проспект ", "ул. ", "ул. "};
+
+    private static String[] lNames = {"Иванов", "Петров", "Сидоров", "Гончаров", "Дружко", "Вражко"};
+
+    private static String[] fNames = {"Иван", "Пётр", "Андрей", "Данила", "Геннадий", "Юрий"};
+
+    private static String[] mNames = {"Иванович", "Петрович", "Андреевич", "Данилович", "Геннадиевич", "Юриевич"};
+
+
+    /**
+     * Generates random person
+     * @return  new person instance
+     */
+    public static Person generatePerson() {
+        Address address = BigGenerator.generateAddress();
+
+        String f = fNames[new Random().nextInt(fNames.length)];
+        String l = lNames[new Random().nextInt(lNames.length)];
+        String m = mNames[new Random().nextInt(mNames.length)];
+
+        FullName fullName = new FullNameImpl(f,m,l);
+
+        return  new PersonImpl(fullName, address);
+    }
+
+
+    /**
+     * Generates random package
+     * @return  new package instance
+     */
+    public static PackageImproved generatePackage() {
+        return generatePackage(Package.Type.getRandomType());
+    }
+
+
+    /**
+     * Generates random package with given package type
+     * @param ptype     maximum package type
+     * @return          new package instance
+     */
+    public static PackageImproved generatePackage(Package.Type ptype) {
+        int maxweight = ptype.getMaxWeight();
+        maxweight = maxweight == 0? 100 : maxweight;
+        return new PackageImpl(generatePerson(), generatePerson(), ptype, new Random().nextInt(maxweight)+1);
+    }
 
 
 
@@ -86,20 +137,23 @@ public class BigGenerator {
     }
 
 
+
     /**
      * Generate random package type set.
      * @return package type set
      */
-    private static Set<Package.Type> generatePackageTypes() {
+    public static Set<Package.Type> generatePackageTypes() {
         Set<Package.Type> typeSet = new HashSet<>();
         int typeCount = Package.Type.values().length;
         Random rnd = new Random();
         int x = rnd.nextInt(typeCount * 10);
             if (x >= 0) typeSet.add(Package.Type.T_10);
             if (x > 5) typeSet.add(Package.Type.T_25);
-            if (x > 10) typeSet.add(Package.Type.T_27);
-            if (x > 35) typeSet.add(Package.Type.T_30);
-            if (x > 45) typeSet.add(Package.Type.T_CP);
+            if (x > 10) typeSet.add(Package.Type.T_26);
+            if (x > 20) typeSet.add(Package.Type.T_27);
+            if (x > 30) typeSet.add(Package.Type.T_28);
+            if (x > 50) typeSet.add(Package.Type.T_30);
+            if (x > 60) typeSet.add(Package.Type.T_CP);
         return typeSet;
     }
 
@@ -125,9 +179,53 @@ public class BigGenerator {
 
 
 
+    /**
+     * Generates address
+     * @return  new Address instance
+     */
     public static Address generateAddress() {
         return new AddressImpl(generateIndex(), generateStreet(), generateCityName(), countryName);
     }
+
+
+
+    /**
+     * Generates index from geolocation
+     * @param location     geolocation point
+     * @param dimension    size of graph panel
+     * @return             index (zip-code analogue)
+     */
+    public static int generateIndex(Point location, Dimension dimension) {
+        int subW = dimension.width / 3;
+        int subH = dimension.height / 3;
+        Rectangle[] subs = {new Rectangle(0, 0,subW, subH),         new Rectangle(subW, 0, subW, subH),         new Rectangle(2*subW, 0, subW, subH),
+                            new Rectangle(0, subH, subW, subH),     new Rectangle(subW, subH, subW, subH),      new Rectangle(2*subW, subH, subW, subH),
+                            new Rectangle(0, 2*subH, subW, subH),   new Rectangle(subW, 2*subH, subW, subH),    new Rectangle(2*subW, 2*subH, subW, subH)};
+        int z = 0;
+        for (int i = 0; i < 9; i++) {
+            if (subs[i].contains(location)) {
+                z = (i + 1) * 10000;
+                break;
+            }
+        }
+        Random r = new Random();
+        int index = 0;
+        boolean ok = false;
+        do {
+            index = r.nextInt(10000) + z;
+            for (PostOffice p: DataStorage.getPostOffices()) {
+                if (p.getCode() == index) {
+                    ok = false;
+                    continue;
+                } else {
+                    ok = true;
+                    break;
+                }
+            }
+        } while (!ok);
+        return index;
+    }
+
 
 
     /**
@@ -202,8 +300,6 @@ public class BigGenerator {
 
 
 
-
-
     /**
      * Generate street name and building number
      * @return street
@@ -253,9 +349,5 @@ public class BigGenerator {
         int i5 = (r.nextInt(9)+1);
         return i1+i2+i3+i4+i5;
     }
-
-
-
-
 
 }

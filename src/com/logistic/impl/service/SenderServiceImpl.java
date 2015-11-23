@@ -81,6 +81,7 @@ public class SenderServiceImpl implements SenderServiceImproved {
         addTransitToSet(getTransit(parcel, new DeliveryTransport.Type[] {DeliveryTransport.Type.LAND}), transitSet);
         addTransitToSet(getTransit(parcel, new DeliveryTransport.Type[] {DeliveryTransport.Type.LAND, DeliveryTransport.Type.AIR}), transitSet);
         addTransitToSet(getTransit(parcel, new DeliveryTransport.Type[] {DeliveryTransport.Type.LAND, DeliveryTransport.Type.SEA}), transitSet);
+        addTransitToSet(getTransit(parcel, new DeliveryTransport.Type[] {DeliveryTransport.Type.LAND, DeliveryTransport.Type.AIR, DeliveryTransport.Type.SEA}), transitSet);
 
         List<Transit> transits = new ArrayList<>();
         transits.addAll(transitSet);
@@ -89,13 +90,24 @@ public class SenderServiceImpl implements SenderServiceImproved {
     }
 
 
+    /**
+     * Calculates all possible routes from post office to all others post offices.
+     * Recovers one route.
+     *
+     * З.Ы. Поиск всех возможных путей можно перенести в генераторы и сохранить в сторедже
+     * все пути для всех почтовых отделений. Здесь останется только блок Recover transit
+     *
+     * @param parcel        package
+     * @param allowedTypes  allowed types of routes
+     * @return              new transit instance
+     */
     private Transit getTransit (Package parcel, DeliveryTransport.Type[] allowedTypes) {
         List<DeliveryTransport.Type> aTypes = new ArrayList<>(Arrays.asList(allowedTypes));
 
         PostOffice send = findOfficeByAddress(((PackageImproved) parcel).getReceiverPostOfficeAddreess());
         PostOffice dest = findOfficeByAddress(((PackageImproved) parcel).getSenderPostOfficeAddress());
 
-        // Dynamical calculation all available routes between sender post office and receiver post office
+        // Dynamical calculation of all available routes between sender post office and receiver post office
         List<PostOffice> closed = new ArrayList<>();                // visited nodes
         List<DeliveryTransportImproved> edges = new ArrayList<>();  // edges from current node
         Deque<PostOffice> opened = new ArrayDeque<>();              // current node queue
@@ -120,7 +132,7 @@ public class SenderServiceImpl implements SenderServiceImproved {
             }
         }
 
-        // Recovery transit
+        // Recover transit
         List<PostOffice> temp = new ArrayList<>();
         if (closed.contains(dest)) {
             for (PostOffice x = dest; x != send; x = findTDSendByDest(x, edges)) {
@@ -190,6 +202,58 @@ public class SenderServiceImpl implements SenderServiceImproved {
 
 
 
+
+    private class PackageSender implements Runnable {
+        private Package parcel;
+        private List<PostOffice> posts;
+
+        PackageSender(Package parcel, Transit transit) {
+            this.parcel = parcel;
+            this.posts = transit.getTransitOffices();
+        }
+
+        private boolean result = false;
+
+        public boolean getResult() {
+            return result;
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < posts.size(); i++) {
+
+                PostOffice post = posts.get(i);
+                boolean received = post.receivePackage(parcel);
+
+                // Calculating time to go from post office 1 to post office 2
+                int time = 0;
+                if (i < posts.size() - 1) {
+                    PostOffice nextPost = posts.get(i + 1);
+                    DeliveryTransportImproved dti = findDeliveryTransports(post, nextPost);
+                    time = dti.getTime();
+                }
+                try {
+                    sleep(time);
+                } catch (InterruptedException e) {
+                    result = false;
+                    break;
+                }
+
+                boolean canSend = true;
+
+                try {
+                    canSend = post.sendPackage(parcel);
+                } catch (NullPackageException e) {
+                    e.printStackTrace();
+                }
+
+                result = received && !canSend;
+            }
+        }
+    }
+
+
+
     /**
      * Sends specified package for a given route (transit)
      * @param parcel     package
@@ -205,48 +269,8 @@ public class SenderServiceImpl implements SenderServiceImproved {
         if (transit == null) throw new NullTransitException();
 
         DataStorage.saveParcelTransit(parcel, transit);
-        List<PostOffice> posts = transit.getTransitOffices();
 
-        Thread sender = new Thread(new Runnable() {
-            private boolean result = false;
-            @Override
-            public void run() {
-                for (int i = 0; i < posts.size(); i++) {
-
-                    PostOffice post = posts.get(i);
-                    boolean received = post.receivePackage(parcel);
-
-                    // Calculating time to go from post office 1 to post office 2
-                    int time = 0;
-                    if (i < posts.size() - 1) {
-                        PostOffice nextPost = posts.get(i + 1);
-                        DeliveryTransportImproved dti = findDeliveryTransports(post, nextPost);
-                        time = dti.getTime();
-                    }
-                    try {
-                        sleep(time);
-                    } catch (InterruptedException e) {
-                        result = false;
-                        break;
-                    }
-
-                    boolean canSend = true;
-
-                    try {
-                        canSend = post.sendPackage(parcel);
-                    } catch (NullPackageException e) {
-                        e.printStackTrace();
-                    }
-
-                    result = received && !canSend;
-                }
-//                if (result) {
-//                    System.out.println(parcel.getPackageId() + " is received!");
-//                } else {
-//                    System.out.println(parcel.getPackageId() + " is lost!");
-//                }
-            }
-        });
+        Thread sender = new Thread(new PackageSender(parcel, transit));
         sender.start();
         return true;
     }
