@@ -5,7 +5,7 @@ import java.io.*;
 /**
  * Created by SnakE on 22.11.2015.
  */
-public class SerializationService {
+public class SerializationUtility {
 
     public static void serializeToFile (Serializable object, File f) throws IOException{
         FileOutputStream fos = new FileOutputStream(f);

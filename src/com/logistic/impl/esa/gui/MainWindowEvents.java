@@ -10,7 +10,7 @@ import com.logistic.impl.esa.generators.BigGenerator;
 import com.logistic.impl.model.person.AddressImpl;
 import com.logistic.impl.model.post.PackageImproved;
 import com.logistic.impl.esa.serialization.PostsAndDeliveries;
-import com.logistic.impl.esa.serialization.SerializationService;
+import com.logistic.impl.esa.serialization.SerializationUtility;
 import com.logistic.impl.model.post.PostOfficeImpl;
 import com.logistic.impl.model.transport.DeliveryTransportImpl;
 import com.logistic.impl.model.transport.DeliveryTransportImproved;
@@ -162,7 +162,7 @@ public class MainWindowEvents extends MouseAdapter implements ActionListener, Li
             try {
                 File file = jfc.getSelectedFile();
                 PostsAndDeliveries pad = new PostsAndDeliveries(DataStorage.getPostOffices(), DataStorage.getDeliveryTransports());
-                SerializationService.serializeToFile(pad, file);
+                SerializationUtility.serializeToFile(pad, file);
             } catch (IOException e1) {
                 JOptionPane.showMessageDialog(frame.graphPanel, e1.toString(), "Ошибка сериализации", JOptionPane.ERROR_MESSAGE);
             }
@@ -183,7 +183,7 @@ public class MainWindowEvents extends MouseAdapter implements ActionListener, Li
         if (result == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = jfc.getSelectedFile();
-                PostsAndDeliveries pad = (PostsAndDeliveries) SerializationService.deserializeFromFile(file);
+                PostsAndDeliveries pad = (PostsAndDeliveries) SerializationUtility.deserializeFromFile(file);
                 DataStorage.saveOfficesAndDeliveries(pad.getPostOffices(), pad.getDelivries());
                 frame.graphPanel.setPostOffices(DataStorage.getPostOffices(), DataStorage.getDeliveryTransports());
             } catch (IOException | ClassNotFoundException e1) {
