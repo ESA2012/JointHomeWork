@@ -144,7 +144,11 @@ public class MainWindowEvents extends MouseAdapter implements ActionListener, Li
      */
     private void generateGraph() {
         DataStorage.initializeByRandomData(Logistic.WORLD_AREA, Logistic.POST_OFFICES_NUMBER, 80);
+        frame.modelPackages.clear();
+        frame.graphPanel.setAll(null, null, null);
+        frame.buttonCheckPackage.setText("Проверить");
         frame.graphPanel.setPostOffices(DataStorage.getPostOffices(), DataStorage.getDeliveryTransports());
+
     }
 
 

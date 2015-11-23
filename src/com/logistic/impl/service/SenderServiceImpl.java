@@ -13,6 +13,7 @@ import com.logistic.impl.service.exceptions.NullTransitException;
 import java.util.*;
 import java.util.List;
 
+import static java.lang.Thread.interrupted;
 import static java.lang.Thread.sleep;
 
 
@@ -228,9 +229,14 @@ public class SenderServiceImpl implements SenderServiceImproved {
                 // Calculating time to go from post office 1 to post office 2
                 int time = 0;
                 if (i < posts.size() - 1) {
-                    PostOffice nextPost = posts.get(i + 1);
-                    DeliveryTransportImproved dti = findDeliveryTransports(post, nextPost);
-                    time = dti.getTime();
+                    try {
+                        PostOffice nextPost = posts.get(i + 1);
+                        DeliveryTransportImproved dti = findDeliveryTransports(post, nextPost);
+                        time = dti.getTime();
+                    } catch (NullPointerException e) {
+                        result = false;
+                        interrupted();
+                    }
                 }
                 try {
                     sleep(time);

@@ -15,6 +15,8 @@ public class DeliveryTransportImpl implements DeliveryTransportImproved, Seriali
 
 
     public DeliveryTransportImpl (PostOffice officeA, PostOffice officeB, Type type) {
+        // TODO: Вопрос: объекст создастся в любом случае? как недопустить создание объекта?
+        if (officeA == null || officeB == null) return;
         this.officeA = officeA;
         this.officeB = officeB;
         this.type = type;

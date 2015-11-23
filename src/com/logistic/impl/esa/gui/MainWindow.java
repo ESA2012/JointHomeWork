@@ -133,7 +133,7 @@ public class MainWindow {
         content.add(graphscroll);
 
         // MainWindow
-        JFrame frame = new JFrame("Граф");
+        JFrame frame = new JFrame("Моделирование работы почтовых отделенийы");
         frame.setContentPane(content);
         frame.setSize (970, 670);
         frame.setResizable(false);
