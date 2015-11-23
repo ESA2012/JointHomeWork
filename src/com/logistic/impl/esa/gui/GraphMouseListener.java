@@ -18,4 +18,9 @@ public class GraphMouseListener extends MouseAdapter {
     public void mousePressed(MouseEvent event) {
         graphPanel.setGraphPoint(event.getPoint());
     }
+
+    @Override
+    public void mouseMoved(MouseEvent event) {
+        graphPanel.setGraphPoint(event.getPoint());
+    }
 }

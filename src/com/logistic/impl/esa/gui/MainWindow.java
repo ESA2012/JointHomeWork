@@ -39,12 +39,12 @@ public class MainWindow {
 
         // Radio buttons
         radioButtonNodesInfoIndex = new JRadioButton("Отображать индексы");
-        radioButtonNodesInfoIndex.setBounds(720, 10, 220, 24);
+        radioButtonNodesInfoIndex.setBounds(720, 10, 230, 24);
         radioButtonNodesInfoIndex.addActionListener(actions);
         radioButtonNodesInfoIndex.setSelected(true);
 
         radioButtonNodesInfoPacks = new JRadioButton("Отображать принимаемые грузы");
-        radioButtonNodesInfoPacks.setBounds(720, 40, 220, 24);
+        radioButtonNodesInfoPacks.setBounds(720, 40, 230, 24);
         radioButtonNodesInfoPacks.addActionListener(actions);
 
         ButtonGroup group = new ButtonGroup();
@@ -56,7 +56,7 @@ public class MainWindow {
 
         // CheckBox Show Directions
         checkBoxShowDirections = new JCheckBox("Отображать направления");
-        checkBoxShowDirections.setBounds(720, 70, 220, 24);
+        checkBoxShowDirections.setBounds(720, 70, 230, 24);
         checkBoxShowDirections.addActionListener(actions);
         content.add(checkBoxShowDirections);
 
@@ -64,7 +64,7 @@ public class MainWindow {
         modelPackages = new DefaultListModel<PackageImproved>();
         listPackages = new JList<>(modelPackages);
         ScrollPane scroll = new ScrollPane();
-        scroll.setBounds(720, 100, 220, 200);
+        scroll.setBounds(720, 100, 230, 200);
         listPackages.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listPackages.addListSelectionListener(actions);
         scroll.add(listPackages);
@@ -72,45 +72,45 @@ public class MainWindow {
 
         // CheckBox Show Directions
         checkBoxShowAllTransits = new JCheckBox("Отображать все доступные пути");
-        checkBoxShowAllTransits.setBounds(720, 310, 220, 24);
+        checkBoxShowAllTransits.setBounds(720, 310, 230, 24);
         checkBoxShowAllTransits.setSelected(true);
         checkBoxShowAllTransits.addActionListener(actions);
         content.add(checkBoxShowAllTransits);
 
         // Generate package button
         buttonGeneratePackage = new JButton("Генерировать посылку");
-        buttonGeneratePackage.setBounds(720, 340, 220, 24);
+        buttonGeneratePackage.setBounds(720, 340, 230, 24);
         buttonGeneratePackage.addActionListener(actions);
         content.add(buttonGeneratePackage);
 
         // Check package button
         buttonCheckPackage = new JButton("Проверить ");
-        buttonCheckPackage.setBounds(720, 370, 220, 24);
+        buttonCheckPackage.setBounds(720, 370, 230, 24);
         buttonCheckPackage.addActionListener(actions);
         content.add(buttonCheckPackage);
 
         // CheckBox Show Messages
         checkBoxShowMessages = new JCheckBox("Показывать сообщение");
-        checkBoxShowMessages.setBounds(720, 400, 220, 24);
+        checkBoxShowMessages.setBounds(720, 400, 230, 24);
         checkBoxShowMessages.setSelected(true);
         checkBoxShowMessages.addActionListener(actions);
         content.add(checkBoxShowMessages);
 
         // Generate graph
         buttonGenerateGraph = new JButton("Генерировать новый граф");
-        buttonGenerateGraph.setBounds(720, 540, 220, 24);
+        buttonGenerateGraph.setBounds(720, 540, 230, 24);
         buttonGenerateGraph.addActionListener(actions);
         content.add(buttonGenerateGraph);
 
         // Serialize button
         buttonSerialize = new JButton("Сохранить...");
-        buttonSerialize.setBounds(720, 570, 105, 24);
+        buttonSerialize.setBounds(720, 570, 110, 24);
         buttonSerialize.addActionListener(actions);
         content.add(buttonSerialize);
 
         // Deserialize button
         buttonDeserialize = new JButton("Загрузить...");
-        buttonDeserialize.setBounds(835, 570, 105, 24);
+        buttonDeserialize.setBounds(840, 570, 110, 24);
         buttonDeserialize.addActionListener(actions);
         content.add(buttonDeserialize);
 
@@ -126,7 +126,8 @@ public class MainWindow {
         // GraphPanel
         graphPanel = new GraphPanel();
         graphPanel.setComponentPopupMenu(popupMenuGraph);
-        graphPanel.addMouseListener(new GraphMouseListener(graphPanel));
+//        graphPanel.addMouseListener(new GraphMouseListener(graphPanel));      // does not work in Linux
+        graphPanel.addMouseMotionListener(new GraphMouseListener(graphPanel));  // works everywhere but is not optimal
         JScrollPane graphscroll = new JScrollPane(graphPanel);
         graphscroll.setBounds(10, 10, 700, 600);
         content.add(graphscroll);
