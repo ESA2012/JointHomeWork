@@ -4,8 +4,6 @@ import com.logistic.api.model.post.PostOffice;
 import com.logistic.api.model.transport.DeliveryTransport;
 import com.logistic.impl.model.transport.DeliveryTransportImpl;
 import com.logistic.impl.model.transport.DeliveryTransportImproved;
-import com.logistic.impl.service.DataStorage;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +13,6 @@ import java.util.Random;
  * Created by SnakE on 07.11.2015.
  */
 public class RouteGenerator {
-
-    private static double MAX_RANGE = 600;
 
 
 

@@ -27,11 +27,8 @@ public class DataStorage {
 
 
     public static void initializeByRandomData(Dimension area, int postOfficesCount, int minDistance) {
-
         Storage.getInstance().putToStorage(POST_OFFICES_KEY, BigGenerator.generatePostOffices(BigGenerator.countryName, postOfficesCount, area, minDistance));
-
         RouteMatrix matrixComplete = RouteGenerator.buildRandomMatrix(getPostOffices());
-
         Storage.getInstance().putToStorage(DELIVERY_TRANSPORTS_KEY, buildDeliveryTransports(matrixComplete, getPostOffices()));
     }
 
