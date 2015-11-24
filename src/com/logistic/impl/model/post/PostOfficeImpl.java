@@ -89,7 +89,7 @@ public class PostOfficeImpl implements PostOffice, Serializable {
     @Override
     public boolean sendPackage(Package parcel) throws NullPackageException{
         if (parcel == null) throw new NullPackageException();
-        return !((PackageImproved) parcel).getReceiverPostOfficeAddreess().equals(address);
+        return !parcel.getReceiverAddress().equals(address);
     }
 
 

@@ -10,8 +10,8 @@ import java.awt.*;
 
 public class Logistic {
 
-    public static final Dimension   WORLD_AREA          = new Dimension(800,800);
-    public static final int         POST_OFFICES_NUMBER = 40;
+    public static final Dimension   WORLD_AREA          = new Dimension(700,700);
+    public static final int         POST_OFFICES_NUMBER = 35;
 
     public static void main(String[] args) throws InterruptedException, ClassNotFoundException {
 

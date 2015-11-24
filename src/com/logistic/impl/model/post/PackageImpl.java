@@ -12,15 +12,13 @@ import java.util.zip.CRC32;
 
 
 
-public class PackageImpl implements PackageImproved {
+public class PackageImpl implements Package {
 	
 	private String packageId;
 	private int weight;
 	private Package.Type type;
 	private Person receiver;
 	private Person sender;
-    private final Address poSenderAddr;
-    private final Address poReceiverAddr;
 	private ArrayList<Stamp> stamps;
 
     /**
@@ -37,8 +35,6 @@ public class PackageImpl implements PackageImproved {
         this.type = type;
         this.packageId = generateID();
         stamps = new ArrayList<>();
-        poReceiverAddr = findClosestPostOffice(receiver.getAddress()).getAddress();
-        poSenderAddr = findClosestPostOffice(sender.getAddress()).getAddress();
         this.type = correctType(weight);
     }
 
@@ -72,28 +68,6 @@ public class PackageImpl implements PackageImproved {
             }
         }
         return result;
-    }
-
-
-
-    /**
-     * Search for closest post office by given address
-     * @param address    address of sender/receiver
-     * @return           closest post office
-     */
-    private PostOffice findClosestPostOffice(Address address) {
-        int personIndx = address.getCode();
-        int min = Integer.MAX_VALUE;
-        PostOffice post = null;
-        for (PostOffice p: DataStorage.getPostOffices()) {
-            int postIndx = p.getCode();
-            int close = Math.abs(personIndx - postIndx);
-            if (close < min) {
-                min = close;
-                post = p;
-            }
-        }
-        return post;
     }
 
 
@@ -154,16 +128,6 @@ public class PackageImpl implements PackageImproved {
     @Override
     public List<Stamp> getStamps() {
         return stamps;
-    }
-
-    @Override
-    public Address getSenderPostOfficeAddress() {
-        return poSenderAddr;
-    }
-
-    @Override
-    public Address getReceiverPostOfficeAddreess() {
-        return poReceiverAddr;
     }
 
     public String toString() {

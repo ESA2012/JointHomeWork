@@ -30,12 +30,9 @@ public class DataStorage {
 
         Storage.getInstance().putToStorage(POST_OFFICES_KEY, BigGenerator.generatePostOffices(BigGenerator.countryName, postOfficesCount, area, minDistance));
 
-        RouteMatrix matrixRoad = RouteGenerator.buildRandomMatrix(DataStorage.getPostOffices(), RouteGenerator.RouteType.LAND);
-        RouteMatrix matrixAir = RouteGenerator.buildRandomMatrix(DataStorage.getPostOffices(), RouteGenerator.RouteType.AIR);
-        RouteMatrix matrixSea = RouteGenerator.buildRandomMatrix(DataStorage.getPostOffices(), RouteGenerator.RouteType.SEA);
-        RouteMatrix matrixComplete = RouteMatrix.join(matrixRoad, matrixAir, matrixSea);
+        RouteMatrix matrixComplete = RouteGenerator.buildRandomMatrix(getPostOffices());
 
-        Storage.getInstance().putToStorage(DELIVERY_TRANSPORTS_KEY, buildDeliveryTransports(matrixComplete, DataStorage.getPostOffices()));
+        Storage.getInstance().putToStorage(DELIVERY_TRANSPORTS_KEY, buildDeliveryTransports(matrixComplete, getPostOffices()));
     }
 
 
@@ -51,6 +48,7 @@ public class DataStorage {
         Storage.getInstance().putToStorage(parcel.getPackageId(), parcel);
         Storage.getInstance().putToStorage(parcel.getPackageId() + TRANSIT_PREFIX, transit);
     }
+
 
 
     public static Transit getTransit(String id) {

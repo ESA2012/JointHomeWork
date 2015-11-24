@@ -9,7 +9,6 @@ import com.logistic.impl.model.person.AddressImpl;
 import com.logistic.impl.model.person.FullNameImpl;
 import com.logistic.impl.model.person.PersonImpl;
 import com.logistic.impl.model.post.PackageImpl;
-import com.logistic.impl.model.post.PackageImproved;
 import com.logistic.impl.model.post.PostOfficeImpl;
 import com.logistic.impl.service.DataStorage;
 import javafx.scene.shape.Circle;
@@ -57,15 +56,21 @@ public class BigGenerator {
      * @return  new person instance
      */
     public static Person generatePerson() {
-        Address address = BigGenerator.generateAddress();
+        Address address = (DataStorage.getPostOffices().get(new Random().nextInt(DataStorage.getPostOffices().size())).getAddress());
+        FullName fullName = generateFullName();
+        return new PersonImpl(fullName, address);
+    }
 
+
+    /**
+     * Generates full name of person
+     * @return  new full name instance
+     */
+    public static FullName generateFullName() {
         String f = fNames[new Random().nextInt(fNames.length)];
         String l = lNames[new Random().nextInt(lNames.length)];
         String m = mNames[new Random().nextInt(mNames.length)];
-
-        FullName fullName = new FullNameImpl(f,m,l);
-
-        return  new PersonImpl(fullName, address);
+        return new FullNameImpl(f,m,l);
     }
 
 
@@ -73,7 +78,7 @@ public class BigGenerator {
      * Generates random package
      * @return  new package instance
      */
-    public static PackageImproved generatePackage() {
+    public static Package generatePackage() {
         return generatePackage(Package.Type.getRandomType());
     }
 
@@ -83,10 +88,16 @@ public class BigGenerator {
      * @param ptype     maximum package type
      * @return          new package instance
      */
-    public static PackageImproved generatePackage(Package.Type ptype) {
+    public static Package generatePackage(Package.Type ptype) {
         int maxweight = ptype.getMaxWeight();
         maxweight = maxweight == 0? 100 : maxweight;
-        return new PackageImpl(generatePerson(), generatePerson(), ptype, new Random().nextInt(maxweight)+1);
+        Person p1, p2;
+        do {
+            p1 = generatePerson();
+            p2 = generatePerson();
+        } while (p1.getAddress() == p2.getAddress());
+
+        return new PackageImpl(p1, p2, ptype, new Random().nextInt(maxweight)+1);
     }
 
 

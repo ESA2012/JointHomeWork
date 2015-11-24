@@ -4,6 +4,7 @@ import com.logistic.api.model.post.PostOffice;
 import com.logistic.api.model.transport.DeliveryTransport;
 import com.logistic.impl.model.transport.DeliveryTransportImpl;
 import com.logistic.impl.model.transport.DeliveryTransportImproved;
+import com.logistic.impl.service.DataStorage;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -15,76 +16,63 @@ import java.util.Random;
  */
 public class RouteGenerator {
 
+    private static double MAX_RANGE = 600;
 
-    /**
-     * Types of route provides three variants: by land, by air, by sea
-     */
-    public enum RouteType {
-        LAND(11, 3, 0, 200), AIR(51, 49, 400, 2000), SEA(51, 49, 600, 3000);
 
-        int randomValue;
-        int routesDestiny;
-        double minRouteLength;
-        double maxRouteLength;
 
-        RouteType(int randomValue, int routesDestiny, double minRouteLength, double maxRouteLength) {
-            this.randomValue = randomValue;
-            this.routesDestiny = routesDestiny;
-            this.minRouteLength = minRouteLength;
-            this.maxRouteLength = maxRouteLength;
+    private static double getMaxRange(List<PostOffice> postOffices) {
+        double max = 0;
+        for (PostOffice p1 : postOffices) {
+            for (PostOffice p2 : postOffices) {
+                double range = p1.getGeolocation().distance(p2.getGeolocation());
+                if (range > max) {
+                    max = range;
+                }
+            }
         }
-
-        public int getRandomValue() {
-            return randomValue;
-        }
-
-        public int getRoutesDestiny() {
-            return routesDestiny;
-        }
-
-        public double getMinRouteLength() {
-            return minRouteLength;
-        }
-
-        public double getMaxRouteLength() {
-            return maxRouteLength;
-        }
+        return max;
     }
+
 
 
 
     /**
      * Build random adjacency matrix for post offices
      * @param postOffices   post offices list
-     * @param rt            route type
      * @return              builded matrix
      */
-    public static RouteMatrix buildRandomMatrix(List<PostOffice> postOffices, RouteType rt) {
-
-        int density = rt.getRoutesDestiny();
-        double distanceMin = rt.getMinRouteLength();
-        double distanceMax = rt.getMaxRouteLength();
+    public static RouteMatrix buildRandomMatrix(List<PostOffice> postOffices) {
         int nodes = postOffices.size();
 
         RouteMatrix matrix = new RouteMatrix(nodes);
 
-        int val = rt.ordinal() + 1;
-
         Random rnd = new Random();
+        double max = getMaxRange(postOffices);
 
         for (int i = 0; i < nodes; i++) {
             for (int j = 0; j < i + 1; j++) {
-                int n = rnd.nextInt(rt.getRandomValue());
-                boolean b = n > density;
 
                 Point p1 = postOffices.get(i).getGeolocation();
                 Point p2 = postOffices.get(j).getGeolocation();
-                b = (p1.distance(p2) >= distanceMin) && b;
-                b = (p1.distance(p2) <= distanceMax) && b;
-                b = (i != j) && b;
+                double dist = p1.distance(p2);
 
-                matrix.getArray()[i][j] = b? val:0;
-                matrix.getArray()[j][i] = b? val:0;
+                int n = rnd.nextInt(100);
+                int val = 0;
+
+                if (n > 30 && dist < max / 5) {
+                    val = 1;
+                }
+
+                if (n > 95 && dist > max / 3) {
+                    val = 2;
+                }
+
+                if (n > 95 && dist > max / 1.3) {
+                    val = 3;
+                }
+
+                matrix.getArray()[i][j] = val;
+                matrix.getArray()[j][i] = val;
             }
         }
         return matrix;

@@ -155,7 +155,7 @@ public class GraphPanel extends JPanel{
 
     private void drawPackagePosition(Graphics2D g){
         if (lastKnownPostOffice != null) {
-            drawNode(g, lastKnownPostOffice, new Color(50,150,150));
+            drawNode(g, lastKnownPostOffice, new Color(250,30,30));
         }
     }
 

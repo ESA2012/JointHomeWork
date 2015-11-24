@@ -9,5 +9,7 @@ import com.logistic.api.service.SenderService;
  * Created by SnakE on 08.11.2015.
  */
 public interface SenderServiceImproved extends SenderService {
-    PostOffice findClosestPostOffice(Address address);
+    PostOffice findClosestPostOffice(int personIndex);
+    boolean isPackageOnTheWay(String packageID);
+    boolean isPackageDelivered(String packageID);
 }

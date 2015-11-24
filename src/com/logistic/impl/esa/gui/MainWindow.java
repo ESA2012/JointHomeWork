@@ -1,7 +1,7 @@
 package com.logistic.impl.esa.gui;
 
-import com.logistic.impl.model.post.PackageImproved;
 import com.logistic.impl.service.SenderServiceImproved;
+import com.logistic.api.model.post.Package;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,13 +19,15 @@ public class MainWindow {
     JCheckBox checkBoxShowDirections;
     JCheckBox checkBoxShowAllTransits;
     JCheckBox checkBoxShowMessages;
-    DefaultListModel<PackageImproved> modelPackages;
-    JList<PackageImproved> listPackages;
+    DefaultListModel<Package> modelPackages;
+    JList<Package> listPackages;
     JButton buttonGeneratePackage;
+    JButton buttonCreatePackage;
     JButton buttonCheckPackage;
     JButton buttonSerialize;
     JButton buttonDeserialize;
     JButton buttonGenerateGraph;
+    JButton buttonDeletePackages;
     JMenuItem menuItemAddNode;
     JMenuItem menuItemAddEdge;
 
@@ -61,7 +63,7 @@ public class MainWindow {
         content.add(checkBoxShowDirections);
 
         // Package list
-        modelPackages = new DefaultListModel<PackageImproved>();
+        modelPackages = new DefaultListModel<Package>();
         listPackages = new JList<>(modelPackages);
         ScrollPane scroll = new ScrollPane();
         scroll.setBounds(720, 100, 230, 200);
@@ -83,18 +85,30 @@ public class MainWindow {
         buttonGeneratePackage.addActionListener(actions);
         content.add(buttonGeneratePackage);
 
+        // Create package button
+        buttonCreatePackage = new JButton("Создать посылку...");
+        buttonCreatePackage.setBounds(720, 370, 230, 24);
+        buttonCreatePackage.addActionListener(actions);
+        content.add(buttonCreatePackage);
+
         // Check package button
         buttonCheckPackage = new JButton("Проверить ");
-        buttonCheckPackage.setBounds(720, 370, 230, 24);
+        buttonCheckPackage.setBounds(720, 400, 230, 24);
         buttonCheckPackage.addActionListener(actions);
         content.add(buttonCheckPackage);
 
         // CheckBox Show Messages
         checkBoxShowMessages = new JCheckBox("Показывать сообщение");
-        checkBoxShowMessages.setBounds(720, 400, 230, 24);
+        checkBoxShowMessages.setBounds(720, 430, 230, 24);
         checkBoxShowMessages.setSelected(true);
         checkBoxShowMessages.addActionListener(actions);
         content.add(checkBoxShowMessages);
+
+        // Delete received packages button
+        buttonDeletePackages = new JButton("Удалить доставленные");
+        buttonDeletePackages.setBounds(720, 460, 230, 24);
+        buttonDeletePackages.addActionListener(actions);
+        content.add(buttonDeletePackages);
 
         // Generate graph
         buttonGenerateGraph = new JButton("Генерировать новый граф");
@@ -133,7 +147,7 @@ public class MainWindow {
         content.add(graphscroll);
 
         // MainWindow
-        JFrame frame = new JFrame("Моделирование работы почтовых отделенийы");
+        JFrame frame = new JFrame("Моделирование работы почтовых отделений");
         frame.setContentPane(content);
         frame.setSize (970, 670);
         frame.setResizable(false);

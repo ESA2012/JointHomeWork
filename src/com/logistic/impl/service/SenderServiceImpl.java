@@ -5,7 +5,6 @@ import com.logistic.api.model.post.*;
 import com.logistic.api.model.post.Package;
 import com.logistic.api.model.transport.DeliveryTransport;
 import com.logistic.api.model.transport.Transit;
-import com.logistic.impl.model.post.PackageImproved;
 import com.logistic.impl.model.transport.DeliveryTransportImproved;
 import com.logistic.impl.model.transport.TransitImpl;
 import com.logistic.impl.exceptions.NullPackageException;
@@ -36,17 +35,16 @@ public class SenderServiceImpl implements SenderServiceImproved {
 
     /**
      * Search closest Post office
-     * @param address    address to search closest post office
+     * @param personIndex    index (Zip-code) to search closest post office
      * @return  closest post office
      */
     @Override
-    public PostOffice findClosestPostOffice(Address address) {
-        int personIndx = address.getCode();
+    public PostOffice findClosestPostOffice(int personIndex) {
         int min = Integer.MAX_VALUE;
         PostOffice post = null;
         for (PostOffice p: DataStorage.getPostOffices()) {
             int postIndx = p.getCode();
-            int close = Math.abs(personIndx - postIndx);
+            int close = Math.abs(personIndex - postIndx);
             if (close < min) {
                 min = close;
                 post = p;
@@ -105,8 +103,8 @@ public class SenderServiceImpl implements SenderServiceImproved {
     private Transit getTransit (Package parcel, DeliveryTransport.Type[] allowedTypes) {
         List<DeliveryTransport.Type> aTypes = new ArrayList<>(Arrays.asList(allowedTypes));
 
-        PostOffice send = findOfficeByAddress(((PackageImproved) parcel).getReceiverPostOfficeAddreess());
-        PostOffice dest = findOfficeByAddress(((PackageImproved) parcel).getSenderPostOfficeAddress());
+        PostOffice send = findOfficeByAddress(parcel.getSenderAddress());
+        PostOffice dest = findOfficeByAddress(parcel.getReceiverAddress());
 
         // Dynamical calculation of all available routes between sender post office and receiver post office
         List<PostOffice> closed = new ArrayList<>();                // visited nodes
@@ -153,7 +151,6 @@ public class SenderServiceImpl implements SenderServiceImproved {
         }
 
         // Build result transit
-        Collections.reverse(temp);
         if (temp.size() < 2) {
             return null;
         } else {
@@ -213,10 +210,19 @@ public class SenderServiceImpl implements SenderServiceImproved {
             this.posts = transit.getTransitOffices();
         }
 
-        private boolean result = false;
+        private boolean onTheWay = false;
+        private boolean delivered = false;
 
-        public boolean getResult() {
-            return result;
+        public boolean isOnTheWay() {
+            return onTheWay;
+        }
+
+        public boolean isDelivered() {
+            return delivered;
+        }
+
+        private void setDelivered(boolean delivered) {
+            this.delivered = delivered;
         }
 
         @Override
@@ -234,30 +240,75 @@ public class SenderServiceImpl implements SenderServiceImproved {
                         DeliveryTransportImproved dti = findDeliveryTransports(post, nextPost);
                         time = dti.getTime();
                     } catch (NullPointerException e) {
-                        result = false;
+                        onTheWay = false;
                         interrupted();
+                        break;
                     }
                 }
+                // Simulate traffic
                 try {
                     sleep(time);
                 } catch (InterruptedException e) {
-                    result = false;
+                    onTheWay = false;
                     break;
                 }
 
-                boolean canSend = true;
+                boolean canSend;
 
                 try {
                     canSend = post.sendPackage(parcel);
                 } catch (NullPackageException e) {
-                    e.printStackTrace();
+                    onTheWay = false;
+                    break;
                 }
 
-                result = received && !canSend;
+                onTheWay = !(received && !canSend);
+            //    System.out.println(parcel.getPackageId() + " is on the way : " + onTheWay + " (" + post.getCode() + ")");
             }
+            try {
+                delivered = !onTheWay && parcel.getReceiverAddress().equals((getPackageCurrentPosition(parcel.getPackageId())).getAddress());
+            } catch (NullPointerException e) {
+                delivered = false;
+                onTheWay = false;
+            }
+            setDelivered(delivered);
+          //  System.out.println(parcel.getPackageId() + " is delivered : " + delivered);
         }
     }
 
+
+
+
+
+    /**
+     * Sender service constructor
+     */
+    public SenderServiceImpl() {
+        senders = new LinkedHashMap<>();
+    }
+
+
+    private Map<String, PackageSender> senders;
+
+
+    /**
+     * returns onTheWay of sendPackage method
+     * @param packageID    packageID
+     * @return             true or false
+     */
+    public boolean isPackageOnTheWay(String packageID) {
+        return senders.get(packageID).isOnTheWay();
+    }
+
+
+    /**
+     * Returns true if package is delivered to receiver 
+     * @param packageID     packageID
+     * @return              true or false
+     */
+    public boolean isPackageDelivered(String packageID) {
+        return senders.get(packageID).isDelivered();
+    }
 
 
     /**
@@ -276,8 +327,9 @@ public class SenderServiceImpl implements SenderServiceImproved {
 
         DataStorage.saveParcelTransit(parcel, transit);
 
-        Thread sender = new Thread(new PackageSender(parcel, transit));
-        sender.start();
+        senders.put(parcel.getPackageId(), new PackageSender(parcel, transit));
+        new Thread(senders.get(parcel.getPackageId())).start();
+
         return true;
     }
 

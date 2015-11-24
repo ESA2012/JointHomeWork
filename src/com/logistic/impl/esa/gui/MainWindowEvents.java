@@ -1,6 +1,8 @@
 package com.logistic.impl.esa.gui;
 
 import com.logistic.api.model.person.Address;
+import com.logistic.api.model.person.FullName;
+import com.logistic.api.model.person.Person;
 import com.logistic.api.model.post.Package;
 import com.logistic.api.model.post.PostOffice;
 import com.logistic.api.model.transport.DeliveryTransport;
@@ -8,9 +10,10 @@ import com.logistic.api.model.transport.Transit;
 import com.logistic.impl.Logistic;
 import com.logistic.impl.esa.generators.BigGenerator;
 import com.logistic.impl.model.person.AddressImpl;
-import com.logistic.impl.model.post.PackageImproved;
 import com.logistic.impl.esa.serialization.PostsAndDeliveries;
 import com.logistic.impl.esa.serialization.SerializationUtility;
+import com.logistic.impl.model.person.PersonImpl;
+import com.logistic.impl.model.post.PackageImpl;
 import com.logistic.impl.model.post.PostOfficeImpl;
 import com.logistic.impl.model.transport.DeliveryTransportImpl;
 import com.logistic.impl.model.transport.DeliveryTransportImproved;
@@ -78,7 +81,11 @@ public class MainWindowEvents extends MouseAdapter implements ActionListener, Li
         if (src instanceof JButton) {
 
             if (src == frame.buttonGeneratePackage) {
-                generatePackage();
+                generatePackage(false);
+            }
+
+            if (src == frame.buttonCreatePackage) {
+                generatePackage(true);
             }
 
             if (src == frame.buttonSerialize) {
@@ -95,6 +102,10 @@ public class MainWindowEvents extends MouseAdapter implements ActionListener, Li
 
             if (src == frame.buttonCheckPackage) {
                 checkPackage();
+            }
+
+            if (src == frame.buttonDeletePackages) {
+                deleteReceived();
             }
         }
 
@@ -123,7 +134,7 @@ public class MainWindowEvents extends MouseAdapter implements ActionListener, Li
         Object src = e.getSource();
         if (src instanceof JList) {
             if (src == frame.listPackages) {
-                PackageImproved p = frame.listPackages.getSelectedValue();
+                Package p = frame.listPackages.getSelectedValue();
                 if (p == null) return;
                 frame.graphPanel.setAll(DataStorage.getTransit(p.getPackageId()),
                         DataStorage.getAvailableTransits(p.getPackageId()),
@@ -203,16 +214,29 @@ public class MainWindowEvents extends MouseAdapter implements ActionListener, Li
     /**
      * Generates new package and send it to sender
      */
-    private void generatePackage() {
+    private void generatePackage(boolean setup) {
         boolean ok = true;
-        PackageImproved parcel;
+        Package parcel = null;
         List<Transit> transits = null;
         do {
-            parcel = BigGenerator.generatePackage();
+            if (!setup) {
+                parcel = BigGenerator.generatePackage();
+            } else {
+                parcel = createPackage();
+                if (parcel == null) {
+                    return;
+                }
+            }
             try {
                 transits = postservice.calculatePossibleTransits(parcel);
                 if (transits.size() < 1) {
                     ok = false;
+                    if (setup) {
+                        JOptionPane.showMessageDialog(frame.graphPanel,
+                                "Невозможно подобрать маршрут для посылки."
+                                        +"\r\nУкажите другую массу или выберите другие отделения.",
+                                "Информация", JOptionPane.INFORMATION_MESSAGE);
+                    }
                     continue;
                 } else {
                     ok = true;
@@ -228,11 +252,74 @@ public class MainWindowEvents extends MouseAdapter implements ActionListener, Li
         try {
             postservice.sendPackage(parcel, transit);
         } catch (NullPackageException | NullTransitException e1) {
-            e1.printStackTrace();
+            JOptionPane.showMessageDialog(frame.graphPanel, e1, "Ошибка сервиса доставки почты", JOptionPane.ERROR_MESSAGE);
         }
         frame.modelPackages.addElement(parcel);
         frame.listPackages.setSelectedIndex(frame.modelPackages.size() - 1);
         frame.graphPanel.setAll(transit, transits, postservice.getPackageCurrentPosition(parcel.getPackageId()));
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    private Package createPackage() {
+        Integer indexA;
+        String iA = JOptionPane.showInputDialog(frame.graphPanel, "Введите индекс почтового отделения отправителя (10000 - 99999): ", "10000");
+        if (iA == null) {
+            return null;
+        }
+        try {
+            indexA = Integer.valueOf(iA);
+            if ((indexA < 10000) || (indexA > 99999)) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException e1) {
+            JOptionPane.showMessageDialog(frame.graphPanel, e1, "Ошибка ввода", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        Integer indexB;
+        String iB = JOptionPane.showInputDialog(frame.graphPanel, "Введите индекс почтового отделения получателя (10000 - 99999): ", "90000");
+        if (iB == null) {
+            return null;
+        }
+        try {
+            indexB = Integer.valueOf(iB);
+            if ((indexB < 10000) || (indexB > 99999)) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException e1) {
+            JOptionPane.showMessageDialog(frame.graphPanel, e1, "Ошибка ввода", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        PostOffice postOfficeA = postservice.findClosestPostOffice(indexA);
+        PostOffice postOfficeB = postservice.findClosestPostOffice(indexB);
+
+        if (postOfficeA == postOfficeB) {
+            JOptionPane.showMessageDialog(frame.graphPanel, "Адреса отправителя и получателя совпадают", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+
+        FullName nameA = BigGenerator.generateFullName();
+        FullName nameB = BigGenerator.generateFullName();
+
+        Person personA = new PersonImpl(nameA, postOfficeA.getAddress());
+        Person personB = new PersonImpl(nameB, postOfficeB.getAddress());
+
+        Integer mass = 5;
+        String m = JOptionPane.showInputDialog(frame.graphPanel, "Введите массу посылки (1 - 100): ", "3");
+        if (m == null) {
+            return null;
+        }
+        try {
+            mass = Integer.valueOf(m);
+        } catch (NumberFormatException e1) {
+            JOptionPane.showMessageDialog(frame.graphPanel, e1, "Ошибка ввода", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return new PackageImpl(personA, personB, Package.Type.T_10, mass);
     }
 
 
@@ -249,21 +336,38 @@ public class MainWindowEvents extends MouseAdapter implements ActionListener, Li
 
         if (frame.checkBoxShowMessages.isSelected()) {
             JOptionPane.showConfirmDialog(frame.graphPanel, packageInfo(pak, po),
-                    "Информация о посылке "+ pak.getPackageId(), JOptionPane.PLAIN_MESSAGE);
+                    "Информация о посылке "+ pak.getPackageId(), JOptionPane.PLAIN_MESSAGE, JOptionPane.INFORMATION_MESSAGE);
         }
 
         frame.graphPanel.setLastKnownPostOffice(po);
         frame.graphPanel.repaint();
 
-        if (((PackageImproved)pak).getReceiverPostOfficeAddreess().equals(postservice.getPackageCurrentPosition(pak.getPackageId()).getAddress())) {
+        if (postservice.isPackageDelivered(pak.getPackageId())) {
             int answer = JOptionPane.showConfirmDialog(frame.graphPanel,
                     "Посылка " + pak.getPackageId() + " доставлена. Удалить её из списка?",
                     "Вопрос", JOptionPane.YES_NO_OPTION);
             if (answer == JOptionPane.YES_OPTION) {
                 frame.modelPackages.removeElement(pak);
+                frame.buttonCheckPackage.setText("Проверить");
                 frame.graphPanel.setAll(null, null, null);
             }
         }
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    private void deleteReceived() {
+        for (int i = 0; i < frame.modelPackages.size(); i++) {
+            Package p = frame.modelPackages.get(i);
+            if (postservice.isPackageDelivered(p.getPackageId())) {
+                frame.modelPackages.removeElement(p);
+                i = -1;
+            }
+        }
+        frame.buttonCheckPackage.setText("Проверить");
+        frame.graphPanel.setAll(null, null, null);
     }
 
 
@@ -307,10 +411,11 @@ public class MainWindowEvents extends MouseAdapter implements ActionListener, Li
 
             double distance = postOfficeA.getGeolocation().distance(postOfficeB.getGeolocation());
             DeliveryTransport.Type type = DeliveryTransport.Type.LAND;
-            if (distance > 200) {
+            double maxRange = (frame.graphPanel.getHeight() + frame.graphPanel.getWidth()) / 2;
+            if (distance > maxRange / 3) {
                 type = DeliveryTransport.Type.AIR;
             }
-            if (distance > 600) {
+            if (distance > maxRange / 1.3) {
                 type = DeliveryTransport.Type.SEA;
             }
 
