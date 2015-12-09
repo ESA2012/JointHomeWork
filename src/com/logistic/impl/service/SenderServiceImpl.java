@@ -235,15 +235,14 @@ public class SenderServiceImpl implements SenderServiceImproved {
                 // Calculating time to go from post office 1 to post office 2
                 int time = 0;
                 if (i < posts.size() - 1) {
-                    try {
-                        PostOffice nextPost = posts.get(i + 1);
-                        DeliveryTransportImproved dti = findDeliveryTransports(post, nextPost);
-                        time = dti.getTime();
-                    } catch (NullPointerException e) {
+                    PostOffice nextPost = posts.get(i + 1);
+                    DeliveryTransportImproved dti = findDeliveryTransports(post, nextPost);
+                    if (dti == null) {
                         onTheWay = false;
                         interrupted();
                         break;
                     }
+                    time = dti.getTime();
                 }
                 // Simulate traffic
                 try {

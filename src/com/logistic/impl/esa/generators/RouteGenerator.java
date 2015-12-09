@@ -59,11 +59,11 @@ public class RouteGenerator {
                     val = 1;
                 }
 
-                if (n > 95 && dist > max / 3) {
+                if (n > 97 && dist > max / 3) {
                     val = 2;
                 }
 
-                if (n > 95 && dist > max / 1.3) {
+                if (n > 97 && dist > max / 1.3) {
                     val = 3;
                 }
 

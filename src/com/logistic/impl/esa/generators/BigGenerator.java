@@ -128,7 +128,7 @@ public class BigGenerator {
             Point p;
             int iterations = 100000; // number of attempts to satisfy the condition of distance between post offices
             do {
-                p = generateLocation(index, dimension); // generates coordinates by index
+                p = generateLocationImproved(index, dimension); // generates coordinates by index
                 if (isGoodPoint(p, points, distance)) { // check condition
                     points[i] = p;
                     break;
@@ -239,6 +239,18 @@ public class BigGenerator {
 
 
 
+    private static LocationGenerationRule[] locationRules = {
+            new LocationGenerationRule(10000, 20000, 0, 0, 50, 50),
+            new LocationGenerationRule(20000, 30000, 1, 0, 0, 50),
+            new LocationGenerationRule(30000, 40000, 2, 0, -50, 50),
+            new LocationGenerationRule(40000, 50000, 0, 1, 50, 0),
+            new LocationGenerationRule(50000, 60000, 1, 1, 0, 0),
+            new LocationGenerationRule(60000, 70000, 2, 1, -50, 0),
+            new LocationGenerationRule(70000, 80000, 0, 2, 50, -50),
+            new LocationGenerationRule(80000, 90000, 1, 2, 0, -50),
+            new LocationGenerationRule(90000, 100000, 2, 2, -50, -50)};
+
+
     /**
      * Generate location coordinates in specified area by index.
      * Area divides by 9 subareas. Each subarea have appropriate range of indexes
@@ -246,61 +258,22 @@ public class BigGenerator {
      * @param dimension     area
      * @return
      */
-    private static Point generateLocation(int index, Dimension dimension) {
-        int overallWidth = dimension.width;
-        int overallHeight = dimension.height;
+    private static Point generateLocationImproved (int index, Dimension dimension) {
 
-        int zoneWidth = overallWidth / 3;
-        int zoneHeight = overallHeight / 3;
+        int zoneWidth = dimension.width / 3;
+        int zoneHeight = dimension.height / 3;
 
         int shiftX = 0;
         int shiftY = 0;
 
-        if (index >= 10000 && index < 20000) {
-            shiftX = 30;
-            shiftY = 30;
-        } else {
-            if (index >= 20000 && index < 30000) {
-                shiftX = zoneWidth;
-                shiftY = 30;
-            } else {
-                if (index >= 30000 && index < 40000) {
-                    shiftX = zoneWidth * 2 - 50;
-                    shiftY = 30;
-                } else {
-                    if (index >= 40000 && index < 50000) {
-                        shiftX = 30;
-                        shiftY = zoneHeight;
-                    } else {
-                        if (index >= 50000 && index < 60000) {
-                            shiftX = zoneWidth;
-                            shiftY = zoneHeight;
-                        } else {
-                            if (index >= 60000 && index < 70000) {
-                                shiftX = zoneWidth * 2 - 50;
-                                shiftY = zoneHeight;
-                            } else {
-                                if (index >= 70000 && index < 80000) {
-                                    shiftX = 0;
-                                    shiftY = zoneHeight * 2 - 50;
-                                } else {
-                                    if (index >= 80000 && index < 90000) {
-                                        shiftX = zoneWidth;
-                                        shiftY = zoneHeight * 2 - 50;
-                                    } else {
-                                        if (index >= 90000 && index < 100000) {
-                                            shiftX = zoneWidth * 2 - 30;
-                                            shiftY = zoneHeight * 2 - 50;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+        for(LocationGenerationRule rule: locationRules) {
+            if(rule.canApply(index)) {
+                int[] coords = rule.apply(zoneWidth, zoneHeight);
+                shiftX = coords[0];
+                shiftY = coords[1];
+                break;
             }
         }
-
         Random r = new Random();
 
         int x = r.nextInt(zoneWidth) + shiftX;
