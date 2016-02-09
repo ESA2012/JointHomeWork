@@ -17,8 +17,9 @@ public class Logistic {
 
         DataStorage.initializeByRandomData(WORLD_AREA, POST_OFFICES_NUMBER, 80);
 
-        new MainWindow(new SenderServiceImpl()).getGraphPanel().setPostOffices(DataStorage.getPostOffices(), DataStorage.getDeliveryTransports());
-
+        SenderServiceImpl senderService = new SenderServiceImpl();
+        MainWindow mainWindow = new MainWindow(senderService);
+        mainWindow.getGraphPanel().setPostOffices(DataStorage.getPostOffices(), DataStorage.getDeliveryTransports());
     }
 
 }

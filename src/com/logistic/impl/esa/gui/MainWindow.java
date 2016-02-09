@@ -13,24 +13,87 @@ import java.awt.*;
  */
 public class MainWindow {
 
-    GraphPanel graphPanel;
-    JRadioButton radioButtonNodesInfoIndex;
-    JRadioButton radioButtonNodesInfoPacks;
-    JCheckBox checkBoxShowDirections;
-    JCheckBox checkBoxShowAllTransits;
-    JCheckBox checkBoxShowMessages;
-    DefaultListModel<Package> modelPackages;
-    JList<Package> listPackages;
-    JButton buttonGeneratePackage;
-    JButton buttonCreatePackage;
-    JButton buttonCheckPackage;
-    JButton buttonSerialize;
-    JButton buttonDeserialize;
-    JButton buttonGenerateGraph;
-    JButton buttonDeletePackages;
-    JMenuItem menuItemAddNode;
-    JMenuItem menuItemAddEdge;
+    private GraphPanel graphPanel;
+    private JRadioButton radioButtonNodesInfoIndex;
+    private JRadioButton radioButtonNodesInfoPacks;
+    private JCheckBox checkBoxShowDirections;
+    private JCheckBox checkBoxShowAllTransits;
+    private JCheckBox checkBoxShowMessages;
+    private DefaultListModel<Package> modelPackages;
+    private JList<Package> listPackages;
+    private JButton buttonGeneratePackage;
+    private JButton buttonCreatePackage;
+    private JButton buttonCheckPackage;
+    private JButton buttonSerialize;
+    private JButton buttonDeserialize;
+    private JButton buttonGenerateGraph;
+    private JButton buttonDeletePackages;
+    private JMenuItem menuItemAddNode;
+    private JMenuItem menuItemAddEdge;
 
+    public JRadioButton getRadioButtonNodesInfoIndex() {
+        return radioButtonNodesInfoIndex;
+    }
+
+    public JRadioButton getRadioButtonNodesInfoPacks() {
+        return radioButtonNodesInfoPacks;
+    }
+
+    public JCheckBox getCheckBoxShowDirections() {
+        return checkBoxShowDirections;
+    }
+
+    public JCheckBox getCheckBoxShowAllTransits() {
+        return checkBoxShowAllTransits;
+    }
+
+    public JCheckBox getCheckBoxShowMessages() {
+        return checkBoxShowMessages;
+    }
+
+    public DefaultListModel<Package> getModelPackages() {
+        return modelPackages;
+    }
+
+    public JList<Package> getListPackages() {
+        return listPackages;
+    }
+
+    public JButton getButtonGeneratePackage() {
+        return buttonGeneratePackage;
+    }
+
+    public JButton getButtonCreatePackage() {
+        return buttonCreatePackage;
+    }
+
+    public JButton getButtonCheckPackage() {
+        return buttonCheckPackage;
+    }
+
+    public JButton getButtonSerialize() {
+        return buttonSerialize;
+    }
+
+    public JButton getButtonDeserialize() {
+        return buttonDeserialize;
+    }
+
+    public JButton getButtonGenerateGraph() {
+        return buttonGenerateGraph;
+    }
+
+    public JButton getButtonDeletePackages() {
+        return buttonDeletePackages;
+    }
+
+    public JMenuItem getMenuItemAddNode() {
+        return menuItemAddNode;
+    }
+
+    public JMenuItem getMenuItemAddEdge() {
+        return menuItemAddEdge;
+    }
 
     public MainWindow(SenderServiceImproved service) {
         JPanel content = new JPanel();
@@ -63,7 +126,7 @@ public class MainWindow {
         content.add(checkBoxShowDirections);
 
         // Package list
-        modelPackages = new DefaultListModel<Package>();
+        modelPackages = new DefaultListModel<>();
         listPackages = new JList<>(modelPackages);
         ScrollPane scroll = new ScrollPane();
         scroll.setBounds(720, 100, 230, 200);
