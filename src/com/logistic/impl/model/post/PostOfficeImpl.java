@@ -83,7 +83,7 @@ public class PostOfficeImpl implements PostOffice, Serializable {
      * Returns true if package can be send to next post office,
      * and returns false when package receiver address and a post office address is equals
      * @param parcel a Package object
-     * @return
+     * @return <i>true</i> when package is sent, and <i>false</i> when not
      * @throws NullPackageException when Package is null
      */
     @Override
@@ -94,9 +94,9 @@ public class PostOfficeImpl implements PostOffice, Serializable {
 
 
     /**
-     *
-     * @param parcel
-     * @return
+     * Receieve package by post office and adds new Stamp
+     * @param parcel parcel to receive
+     * @return <i>true</i> when package is received, and <i>false</i> when not
      */
     @Override
     public boolean receivePackage(Package parcel) {

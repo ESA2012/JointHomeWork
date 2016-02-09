@@ -43,7 +43,7 @@ public class AddressImpl implements Address, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (o != null || o instanceof Address) {
+        if (o != null & o instanceof Address) {
             Address address = (Address) o;
             return address.toString().equals(this.toString());
         } else {
